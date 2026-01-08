@@ -34,3 +34,12 @@ On n8n's dashboard, select "Create Credentials" and then select "LlamaCloud API 
 Paste your API key and save:
 
 ![Credentials - Pt2](./assets/credentials_pt2.png)
+
+---
+
+### View Also:
+
+- [LlamaParse n8n setup](./llamaparse.md)
+- [LlamaCloud Index setup](./llamacloud_index.md)
+- [LlamaExtract Setup](./llamaextract.md)
+- [Back to top](#setting-up-llamacloud-nodes-for-n8n)

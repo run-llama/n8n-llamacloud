@@ -1,0 +1,52 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "guides/*.md"
+      - "guides/assets/*.png"
+      - "guides/html/config.json"
+      - "guides/scripts/generate_docs.sh"
+  workflow_dispatch: 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install markdown-to-html-cli
+        run: npm i -g markdown-to-html-cli
+      
+      - name: Create html file
+        run: bash guides/scripts/generate_docs.sh
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "guides/html/"
+      
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
