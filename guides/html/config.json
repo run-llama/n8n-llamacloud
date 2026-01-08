@@ -1,0 +1,13 @@
+{
+  "n8n-nodes-llamacloud": {
+    "document": {
+      "title": "n8n Nodes for LlamaCloud",
+      "description": "Official LlamaCloud integration nodes for n8n",
+      "meta": [
+        { "keywords": "n8n,workflow,automation,parsing,extraction" }
+      ]
+    },
+    "favicon": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦙</text></svg>",
+    "github-corners": "https://github.com/run-llama/n8n-llamacloud"
+  }
+}
