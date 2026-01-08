@@ -64,12 +64,11 @@ Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https:/
    ```bash
    # Create custom nodes directory if it doesn't exist
    mkdir -p ~/.n8n/custom
-   npm link n8n-llamacloud
+   npm link n8n-nodes-llamacloud
    ```
 
 5. **Restart n8n**
    ```bash
-   n8n stop
    n8n start
    ```
 
@@ -77,13 +76,13 @@ Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https:/
 
 1. **Install globally**
    ```bash
-   npm install -g n8n-llamacloud
-   npm link
+   npm install -g @llamaindex/n8n-nodes-llamacloud
+   cd  ~/.n8n/custom
+   npm link @llamaindex/n8n-nodes-llamacloud
    ```
 
 2. **Restart n8n**
    ```bash
-   n8n stop
    n8n start
    ```
 

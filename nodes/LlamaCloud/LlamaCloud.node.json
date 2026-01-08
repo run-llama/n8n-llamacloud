@@ -1,28 +1,28 @@
 {
-    "name": "LlamaCloud",
-    "displayName": "LlamaCloud",
-    "group": ["action"],
-    "version": 1,
-    "description": "Retrieve context from your LlamaCloud Index",
-    "defaults": {
-      "name": "LlamaCloud"
-    },
-    "inputs": ["main"],
-    "outputs": ["main"],
-    "credentials": [
-      {
-        "name": "LlamaCloudApi",
-        "required": true
-      }
-    ],
-    "properties": [
-      {
-        "displayName": "Index Name",
-        "name": "indexName",
-        "type": "string",
-        "default": "",
-        "required": true,
-        "description": "Your LlamaCloud index name"
-      }
-    ]
-  }
+	"name": "LlamaCloud",
+	"displayName": "LlamaCloud",
+	"group": ["action"],
+	"version": 1,
+	"description": "Retrieve context from your LlamaCloud Index",
+	"defaults": {
+		"name": "LlamaCloud"
+	},
+	"inputs": ["main"],
+	"outputs": ["main"],
+	"credentials": [
+		{
+			"name": "LlamaCloudApi",
+			"required": true
+		}
+	],
+	"properties": [
+		{
+			"displayName": "Index Name",
+			"name": "indexName",
+			"type": "string",
+			"default": "",
+			"required": true,
+			"description": "Your LlamaCloud index name"
+		}
+	]
+}
