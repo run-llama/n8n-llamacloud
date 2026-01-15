@@ -6,8 +6,7 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import { LlamaCloudIndex } from 'llama-cloud-services';
-import { MetadataMode } from '@llamaindex/core/schema';
+import { LlamaCloud as LlamaCloudClient } from '@llamaindex/llama-cloud';
 
 export class LlamaCloud implements INodeType {
 	description: INodeTypeDescription = {
@@ -30,13 +29,13 @@ export class LlamaCloud implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Index Name',
-				name: 'indexName',
+				displayName: 'Index ID',
+				name: 'indexId',
 				type: 'string',
 				required: true,
 				default: '',
-				placeholder: 'my-index-name',
-				description: 'Your LlamaCloud index name',
+				placeholder: '',
+				description: 'Your LlamaCloud Index ID',
 			},
 		],
 	};
@@ -45,34 +44,23 @@ export class LlamaCloud implements INodeType {
 		// Get parameters from node
 		const credentials = await this.getCredentials('llamaCloudApi');
 		const apiKey = credentials.apiKey as string;
-		const indexName = this.getNodeParameter('indexName', 0) as string;
+		const pipelineId = this.getNodeParameter('indexId', 0) as string;
 		const items = this.getInputData();
 		const chatMessage = typeof items[0].json.chatInput === 'string' ? items[0].json.chatInput : '';
-		// // Initialize LlamaCloudIndex
-		const index = new LlamaCloudIndex({
+		const client = new LlamaCloudClient({
 			apiKey: apiKey,
-			name: indexName,
-			projectName: 'Default',
 		});
-
-		const retriever = index.asRetriever({
-			similarityTopK: 5,
-		});
-
-		const contexts = await retriever.retrieve({
+		const result = await client.pipelines.retrieve(pipelineId, {
+			dense_similarity_top_k: 5,
 			query: chatMessage,
 		});
 
-		// Extract the text content from each context item using getContent()
-		const contextTexts = Array.isArray(contexts)
-			? contexts
-					.map((item) =>
-						item.node && typeof item.node.getContent === 'function'
-							? item.node.getContent(MetadataMode.NONE)
-							: null,
-					)
-					.filter(Boolean)
-			: [];
+		const contextTexts: string[] = [];
+		for (const node of result.retrieval_nodes) {
+			if (node.node.text) {
+				contextTexts.push(node.node.text);
+			}
+		}
 
 		return [[{ json: { context: contextTexts } }]];
 	}

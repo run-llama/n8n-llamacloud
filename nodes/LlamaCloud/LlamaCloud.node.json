@@ -17,12 +17,12 @@
 	],
 	"properties": [
 		{
-			"displayName": "Index Name",
-			"name": "indexName",
+			"displayName": "Index ID",
+			"name": "indexId",
 			"type": "string",
 			"default": "",
 			"required": true,
-			"description": "Your LlamaCloud index name"
+			"description": "Your LlamaCloud Index ID"
 		}
 	]
 }
