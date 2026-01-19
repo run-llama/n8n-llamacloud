@@ -108,15 +108,9 @@ export class LlamaParse implements INodeType {
 						file_id: fileId,
 						tier: 'fast',
 						version: 'latest',
-						expand: ['markdown', 'text', 'items'],
+						expand: ['text', 'items'],
 					});
-					if (parsed.markdown) {
-						for (const page of parsed.markdown.pages) {
-							if (page.success && 'markdown' in page) {
-								returnData.push({ text: page.markdown });
-							}
-						}
-					} else if (parsed.text) {
+					if (parsed.text) {
 						for (const page of parsed.text.pages) {
 							returnData.push({ text: page.text });
 						}
