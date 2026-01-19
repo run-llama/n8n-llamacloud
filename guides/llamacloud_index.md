@@ -26,5 +26,7 @@ Once that is set, you can use the chat messages as input for the LlamaCloud Inde
 
 - [LlamaParse n8n setup](./llamaparse.md)
 - [LlamaExtract Setup](./llamaextract.md)
+- [LlamaClassify n8n setup](./llamaclassify.md)
+- [LlamaSheets n8n setup](./llamasheets.md)
 - [Setting up LlamaCloud nodes](./index.md)
 - [Back to top](#llamacloud-index-setup-in-n8n)
