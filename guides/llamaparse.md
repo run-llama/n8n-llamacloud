@@ -22,5 +22,7 @@ And you can employ the form output as input for LlamaParse:
 
 - [LlamaCloud Index setup](./llamacloud_index.md)
 - [LlamaExtract Setup](./llamaextract.md)
+- [LlamaClassify n8n setup](./llamaclassify.md)
+- [LlamaSheets n8n setup](./llamasheets.md)
 - [Setting up LlamaCloud nodes](./index.md)
 - [Back to top](#llamaparse-n8n-setup)

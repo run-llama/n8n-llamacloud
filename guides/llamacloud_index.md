@@ -12,7 +12,7 @@ The LlamaCloud index node is specifically designed for chat inputs, so you will 
 
 ![Chat Trigger](./assets/chat_trigger.png)
 
-And then you can select the 'LlamaCloud' node, pasting the name of your LlamaCloud Index in the configuration field:
+And then you can select the 'LlamaCloud' node, pasting the ID of your LlamaCloud Index in the configuration field:
 
 ![LlamaCloud Index Setup](./assets/index_pt1.png)
 
@@ -26,5 +26,7 @@ Once that is set, you can use the chat messages as input for the LlamaCloud Inde
 
 - [LlamaParse n8n setup](./llamaparse.md)
 - [LlamaExtract Setup](./llamaextract.md)
+- [LlamaClassify n8n setup](./llamaclassify.md)
+- [LlamaSheets n8n setup](./llamasheets.md)
 - [Setting up LlamaCloud nodes](./index.md)
 - [Back to top](#llamacloud-index-setup-in-n8n)

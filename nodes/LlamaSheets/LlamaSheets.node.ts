@@ -10,16 +10,16 @@ import {
 import fs from 'fs';
 import LlamaCloud from '@llamaindex/llama-cloud';
 
-export class LlamaParse implements INodeType {
+export class LlamaSheets implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'LlamaParse',
-		name: 'llamaParse',
+		displayName: 'LlamaSheets',
+		name: 'llamaSheets',
 		icon: 'file:llamacloud.svg',
 		group: ['transform'],
 		version: 1,
-		description: 'Parse PDF files and get their content in markdown!',
+		description: 'Parse an Excel file and download Parquet data',
 		defaults: {
-			name: 'LlamaParse',
+			name: 'LlamaSheets',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
@@ -36,14 +36,14 @@ export class LlamaParse implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Parse the File',
-						value: 'parsing',
+						name: 'Parse an Excel File',
+						value: 'sheets',
 					},
 				],
-				default: 'parsing',
+				default: 'sheets',
 				noDataExpression: true,
 				required: true,
-				description: 'Parse a PDF file and get the markdown content!',
+				description: 'Parse an Excel File, download Parquet data',
 			},
 			{
 				displayName: 'Operation',
@@ -51,18 +51,18 @@ export class LlamaParse implements INodeType {
 				type: 'options',
 				displayOptions: {
 					show: {
-						resource: ['parsing'],
+						resource: ['sheets'],
 					},
 				},
 				options: [
 					{
 						name: 'Parse',
-						value: 'parse',
-						description: 'Parse a PDF File',
-						action: 'Parse a pdf file',
+						value: 'sheets',
+						description: 'Parse a Excel File',
+						action: 'Parse an xlsx file',
 					},
 				],
-				default: 'parse',
+				default: 'sheets',
 				noDataExpression: true,
 			},
 			{
@@ -72,12 +72,12 @@ export class LlamaParse implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						operation: ['parse'],
-						resource: ['parsing'],
+						operation: ['sheets'],
+						resource: ['sheets'],
 					},
 				},
 				default: '',
-				placeholder: '/User/user/Desktop/file.pdf',
+				placeholder: '/User/user/Desktop/file.xlsx',
 				description: 'Path to your file',
 			},
 		],
@@ -91,8 +91,8 @@ export class LlamaParse implements INodeType {
 
 		// For each item, make an API call to create a contact
 		for (let i = 0; i < items.length; i++) {
-			if (resource === 'parsing') {
-				if (operation === 'parse') {
+			if (resource === 'sheets') {
+				if (operation === 'sheets') {
 					// Get email input
 					const filePath = this.getNodeParameter('filePath', i) as string;
 					// Get additional fields input
@@ -101,21 +101,43 @@ export class LlamaParse implements INodeType {
 					const client = new LlamaCloud({ apiKey: apiKey });
 					const fileObj = await client.files.create({
 						file: fs.createReadStream(filePath),
-						purpose: 'parse',
+						purpose: 'sheet',
 					});
 					const fileId = fileObj.id;
-					const parsed = await client.parsing.parse({
+					const parsed = await client.beta.sheets.parse({
 						file_id: fileId,
-						tier: 'fast',
-						version: 'latest',
-						expand: ['text', 'items'],
+						config: {
+							generate_additional_metadata: true,
+						},
 					});
-					if (parsed.text) {
-						for (const page of parsed.text.pages) {
-							returnData.push({ text: page.text });
+					if (parsed.success) {
+						if (parsed.regions) {
+							for (const region of parsed.regions) {
+								const regionTitle = region.title ? region.title : '';
+								const regionDescription = region.description ? region.description : '';
+								const regionId = region.region_id ? region.region_id : null;
+								let regionUrl: string | null = null;
+								if (regionId) {
+									const parquetUrl = await client.beta.sheets.getResultTable('table', {
+										region_id: regionId,
+										spreadsheet_job_id: parsed.id,
+										expires_at_seconds: 3600,
+									});
+									regionUrl = parquetUrl.url;
+								}
+								const obj = {
+									regionTitle: regionTitle,
+									regionDescription: regionDescription,
+									parquetUrl: regionUrl,
+									secondsToExpire: 3600,
+								};
+								returnData.push(obj);
+							}
+						} else {
+							throw new ApplicationError('Could not parse the excel sheet');
 						}
 					} else {
-						throw new ApplicationError('Could not parse the file');
+						throw new ApplicationError('Could not parse the excel sheet');
 					}
 				}
 			}

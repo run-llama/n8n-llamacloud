@@ -1,6 +1,5 @@
 import {
 	ApplicationError,
-	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeType,
@@ -10,15 +9,16 @@ import {
 
 import fs from 'fs';
 import LlamaCloud from '@llamaindex/llama-cloud';
+import { ClassifierRule } from '@llamaindex/llama-cloud/resources/classifier.js';
 
-export class LlamaExtract implements INodeType {
+export class LlamaClassify implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'LlamaExtract',
-		name: 'llamaExtract',
+		displayName: 'LlamaClassify',
+		name: 'llamaClassify',
 		icon: 'file:llamacloud.svg',
 		group: ['transform'],
 		version: 1,
-		description: 'Extract content from files through LlamaExtract agents!',
+		description: 'Classify files based on specific rules.',
 		defaults: {
 			name: 'LlamaExtract',
 		},
@@ -37,14 +37,14 @@ export class LlamaExtract implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Extract Data',
-						value: 'extracting',
+						name: 'Classify File',
+						value: 'classify',
 					},
 				],
-				default: 'extracting',
+				default: 'classify',
 				noDataExpression: true,
 				required: true,
-				description: 'Extract Data From a File and Get Elegant Structured Information about it',
+				description: 'Classify a file based on pre-defined rules',
 			},
 			{
 				displayName: 'Operation',
@@ -52,34 +52,59 @@ export class LlamaExtract implements INodeType {
 				type: 'options',
 				displayOptions: {
 					show: {
-						resource: ['extracting'],
+						resource: ['classify'],
 					},
 				},
 				options: [
 					{
-						name: 'Extract',
-						value: 'extract',
-						description: 'Extract Data from a File',
-						action: 'Extract data from a file',
+						name: 'Classify',
+						value: 'classify',
+						description: 'Classify a file based on pre-defined rules',
+						action: 'Classify a file',
 					},
 				],
-				default: 'extract',
+				default: 'classify',
 				noDataExpression: true,
 			},
 			{
-				displayName: 'Agent ID',
-				name: 'agentId',
-				type: 'string',
+				displayName: 'Rules',
+				name: 'rulesUi',
+				placeholder: 'Add Rule',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				default: [],
 				required: true,
+				description: 'Classification Rules',
+				options: [
+					{
+						name: 'rules',
+						displayName: 'Rules',
+						values: [
+							{
+								displayName: 'Category',
+								name: 'category',
+								default: '',
+								required: true,
+								type: 'string',
+							},
+							{
+								displayName: 'Description',
+								name: 'description',
+								default: '',
+								required: true,
+								type: 'string',
+							},
+						],
+					},
+				],
 				displayOptions: {
 					show: {
-						operation: ['extract'],
-						resource: ['extracting'],
+						operation: ['classify'],
+						resource: ['classify'],
 					},
 				},
-				default: '',
-				placeholder: '',
-				description: 'Extraction Agent ID',
 			},
 			{
 				displayName: 'File Path',
@@ -88,8 +113,8 @@ export class LlamaExtract implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						operation: ['extract'],
-						resource: ['extracting'],
+						operation: ['classify'],
+						resource: ['classify'],
 					},
 				},
 				default: '',
@@ -107,31 +132,48 @@ export class LlamaExtract implements INodeType {
 
 		// For each item, make an API call to create a contact
 		for (let i = 0; i < items.length; i++) {
-			if (resource === 'extracting') {
-				if (operation === 'extract') {
+			if (resource === 'classify') {
+				if (operation === 'classify') {
 					// Get file path input
 					const filePath = this.getNodeParameter('filePath', i) as string;
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
 
-					const agentId = this.getNodeParameter('agentId', i) as string;
+					const rules = this.getNodeParameter('rulesUi', i) as {
+						rules: {
+							category: string;
+							description: string;
+						}[];
+					};
 					const client = new LlamaCloud({ apiKey: apiKey });
 					const fileObj = await client.files.create({
 						file: fs.createReadStream(filePath),
-						purpose: 'extract',
+						purpose: 'classify',
 					});
 					const fileId = fileObj.id;
-					const result = await client.extraction.jobs.extract({
-						extraction_agent_id: agentId,
-						file_id: fileId,
+					const classifyRules: ClassifierRule[] = [];
+					for (const rule of rules.rules) {
+						const classifierRule = {
+							type: rule.category,
+							description: rule.description,
+						} as ClassifierRule;
+						classifyRules.push(classifierRule);
+					}
+					const result = await client.classifier.classify({
+						rules: classifyRules,
+						file_ids: [fileId],
 					});
-					if (result.data) {
-						const stringified = JSON.stringify(result.data, null, 2);
-						const obj = { result: stringified } as IDataObject;
+					const class_res = result.items[0];
+					if (class_res.result) {
+						const obj = {
+							category: class_res.result.type,
+							reasons: class_res.result.reasoning,
+							confidence: class_res.result.confidence,
+						};
 						returnData.push(obj);
 					} else {
-						throw new ApplicationError('Could not extract data');
+						throw new ApplicationError('Could not produce a classification for the file');
 					}
 				}
 			}

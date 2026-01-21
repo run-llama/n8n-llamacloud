@@ -42,4 +42,6 @@ Paste your API key and save:
 - [LlamaParse n8n setup](./llamaparse.md)
 - [LlamaCloud Index setup](./llamacloud_index.md)
 - [LlamaExtract Setup](./llamaextract.md)
+- [LlamaClassify n8n setup](./llamaclassify.md)
+- [LlamaSheets n8n setup](./llamasheets.md)
 - [Back to top](#setting-up-llamacloud-nodes-for-n8n)
