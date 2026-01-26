@@ -21,4 +21,5 @@ As for LlamaParse, you can also set the node to receive inputs from other nodes,
 - [LlamaExtract n8n setup](./llamaextract.md)
 - [LlamaClassify n8n setup](./llamaclassify.md)
 - [Setting up LlamaCloud nodes](./index.md)
+- [Setup with Docker](./docker.md)
 - [Back to top](#llamasheets-setup-in-n8n)

@@ -44,4 +44,5 @@ Paste your API key and save:
 - [LlamaExtract Setup](./llamaextract.md)
 - [LlamaClassify n8n setup](./llamaclassify.md)
 - [LlamaSheets n8n setup](./llamasheets.md)
+- [Setup with Docker](./docker.md)
 - [Back to top](#setting-up-llamacloud-nodes-for-n8n)
