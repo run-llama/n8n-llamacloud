@@ -1,0 +1,17 @@
+name: n8n-llamacloud
+
+services:
+  n8n-llamacloud:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 5678:5678
+    environment:
+      # you need to provide the variables (marked as ${var_name}) as env variables or in a .env file
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
