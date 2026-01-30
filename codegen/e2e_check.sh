@@ -38,7 +38,6 @@ last_exit_code=$(echo $?)
 # or if no new SDK version has been published (exit code = 0)
 if [ $force == "false" ]
 then
-	echo "hello world"
 	# means that versions match or that there was an error
 	if [ $last_exit_code -lt 2 ]
 	then
