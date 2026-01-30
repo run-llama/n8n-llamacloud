@@ -1,0 +1,30 @@
+import { APIResource } from "../../core/resource.mjs";
+import * as AgentDataAPI from "./agent-data.mjs";
+import { AgentData, AgentDataAgentDataParams, AgentDataAggregateParams, AgentDataAggregateResponse, AgentDataDeleteByQueryParams, AgentDataDeleteByQueryResponse, AgentDataDeleteParams, AgentDataDeleteResponse, AgentDataGetParams, AgentDataSearchParams, AgentDataSearchResponse, AgentDataUpdateParams } from "./agent-data.mjs";
+import * as ParseConfigurationsAPI from "./parse-configurations.mjs";
+import { ParseConfiguration, ParseConfigurationCreate, ParseConfigurationDeleteParams, ParseConfigurationGetParams, ParseConfigurationGetParseConfigurationsParams, ParseConfigurationParseConfigurationsParams, ParseConfigurationQueryResponse, ParseConfigurationUpdateParams, ParseConfigurations } from "./parse-configurations.mjs";
+import * as SheetsAPI from "./sheets.mjs";
+import { SheetCreateParams, SheetDeleteJobParams, SheetDeleteJobResponse, SheetGetParams, SheetGetResultTableParams, SheetListParams, Sheets, SheetsJob, SheetsJobsPaginatedClassifyJobs, SheetsParsingConfig } from "./sheets.mjs";
+import * as SplitAPI from "./split.mjs";
+import { Split, SplitCategory, SplitCreateParams, SplitCreateResponse, SplitDocumentInput, SplitGetParams, SplitGetResponse, SplitListParams, SplitListResponse, SplitListResponsesPaginatedClassifyJobs, SplitResultResponse, SplitSegmentResponse } from "./split.mjs";
+import * as BatchAPI from "./batch/batch.mjs";
+import { Batch, BatchCancelParams, BatchCancelResponse, BatchCreateParams, BatchCreateResponse, BatchGetStatusParams, BatchGetStatusResponse, BatchListParams, BatchListResponse, BatchListResponsesPaginatedBatchItems } from "./batch/batch.mjs";
+import * as DirectoriesAPI from "./directories/directories.mjs";
+import { Directories, DirectoryCreateParams, DirectoryCreateResponse, DirectoryDeleteParams, DirectoryGetParams, DirectoryGetResponse, DirectoryListParams, DirectoryListResponse, DirectoryListResponsesPaginatedClassifyJobs, DirectoryUpdateParams, DirectoryUpdateResponse } from "./directories/directories.mjs";
+export declare class Beta extends APIResource {
+    agentData: AgentDataAPI.AgentData;
+    parseConfigurations: ParseConfigurationsAPI.ParseConfigurations;
+    sheets: SheetsAPI.Sheets;
+    directories: DirectoriesAPI.Directories;
+    batch: BatchAPI.Batch;
+    split: SplitAPI.Split;
+}
+export declare namespace Beta {
+    export { type AgentData as AgentData, type AgentDataDeleteResponse as AgentDataDeleteResponse, type AgentDataAggregateResponse as AgentDataAggregateResponse, type AgentDataDeleteByQueryResponse as AgentDataDeleteByQueryResponse, type AgentDataSearchResponse as AgentDataSearchResponse, type AgentDataUpdateParams as AgentDataUpdateParams, type AgentDataDeleteParams as AgentDataDeleteParams, type AgentDataAgentDataParams as AgentDataAgentDataParams, type AgentDataAggregateParams as AgentDataAggregateParams, type AgentDataDeleteByQueryParams as AgentDataDeleteByQueryParams, type AgentDataGetParams as AgentDataGetParams, type AgentDataSearchParams as AgentDataSearchParams, };
+    export { ParseConfigurations as ParseConfigurations, type ParseConfiguration as ParseConfiguration, type ParseConfigurationCreate as ParseConfigurationCreate, type ParseConfigurationQueryResponse as ParseConfigurationQueryResponse, type ParseConfigurationUpdateParams as ParseConfigurationUpdateParams, type ParseConfigurationDeleteParams as ParseConfigurationDeleteParams, type ParseConfigurationGetParams as ParseConfigurationGetParams, type ParseConfigurationGetParseConfigurationsParams as ParseConfigurationGetParseConfigurationsParams, type ParseConfigurationParseConfigurationsParams as ParseConfigurationParseConfigurationsParams, };
+    export { Sheets as Sheets, type SheetsJob as SheetsJob, type SheetsParsingConfig as SheetsParsingConfig, type SheetDeleteJobResponse as SheetDeleteJobResponse, type SheetsJobsPaginatedClassifyJobs as SheetsJobsPaginatedClassifyJobs, type SheetCreateParams as SheetCreateParams, type SheetListParams as SheetListParams, type SheetDeleteJobParams as SheetDeleteJobParams, type SheetGetParams as SheetGetParams, type SheetGetResultTableParams as SheetGetResultTableParams, };
+    export { Directories as Directories, type DirectoryCreateResponse as DirectoryCreateResponse, type DirectoryUpdateResponse as DirectoryUpdateResponse, type DirectoryListResponse as DirectoryListResponse, type DirectoryGetResponse as DirectoryGetResponse, type DirectoryListResponsesPaginatedClassifyJobs as DirectoryListResponsesPaginatedClassifyJobs, type DirectoryCreateParams as DirectoryCreateParams, type DirectoryUpdateParams as DirectoryUpdateParams, type DirectoryListParams as DirectoryListParams, type DirectoryDeleteParams as DirectoryDeleteParams, type DirectoryGetParams as DirectoryGetParams, };
+    export { Batch as Batch, type BatchCreateResponse as BatchCreateResponse, type BatchListResponse as BatchListResponse, type BatchCancelResponse as BatchCancelResponse, type BatchGetStatusResponse as BatchGetStatusResponse, type BatchListResponsesPaginatedBatchItems as BatchListResponsesPaginatedBatchItems, type BatchCreateParams as BatchCreateParams, type BatchListParams as BatchListParams, type BatchCancelParams as BatchCancelParams, type BatchGetStatusParams as BatchGetStatusParams, };
+    export { Split as Split, type SplitCategory as SplitCategory, type SplitDocumentInput as SplitDocumentInput, type SplitResultResponse as SplitResultResponse, type SplitSegmentResponse as SplitSegmentResponse, type SplitCreateResponse as SplitCreateResponse, type SplitListResponse as SplitListResponse, type SplitGetResponse as SplitGetResponse, type SplitListResponsesPaginatedClassifyJobs as SplitListResponsesPaginatedClassifyJobs, type SplitCreateParams as SplitCreateParams, type SplitListParams as SplitListParams, type SplitGetParams as SplitGetParams, };
+}
+//# sourceMappingURL=beta.d.mts.map

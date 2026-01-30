@@ -26,12 +26,13 @@
 	},
 	"main": "index.js",
 	"scripts": {
-		"build": "npx rimraf dist && tsc && gulp build:icons",
+		"build": "npx rimraf dist && tsc && gulp build:assets",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint nodes credentials package.json",
 		"lintfix": "eslint nodes credentials package.json --fix",
-		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json",
+		"embed-llama-cloud": "node scripts/embed-llama-cloud.js"
 	},
 	"files": [
 		"dist"
@@ -60,7 +61,6 @@
 		"n8n-workflow": "*"
 	},
 	"dependencies": {
-		"@llamaindex/llama-cloud": "^0.14.1",
 		"llama-cloud-services": "^0.5.1"
 	}
 }

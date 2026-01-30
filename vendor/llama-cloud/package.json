@@ -1,0 +1,7 @@
+{
+  "name": "llama-cloud-vendor",
+  "version": "0.14.1",
+  "description": "Vendored copy of @llamaindex/llama-cloud for n8n community nodes",
+  "type": "commonjs",
+  "private": true
+}
