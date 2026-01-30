@@ -8,8 +8,8 @@ import {
 } from 'n8n-workflow/dist/index.js';
 
 import fs from 'fs';
-import LlamaCloud from '@llamaindex/llama-cloud';
-import { ClassifierRule } from '@llamaindex/llama-cloud/resources/classifier.js';
+import LlamaCloud from '../../sdk/index.js';
+import { ClassifierRule } from '../../sdk/resources/classifier.js';
 
 export class LlamaClassify implements INodeType {
 	description: INodeTypeDescription = {

@@ -59,8 +59,5 @@
 	"peerDependencies": {
 		"n8n-workflow": "*"
 	},
-	"dependencies": {
-		"@llamaindex/llama-cloud": "^0.14.1",
-		"llama-cloud-services": "^0.5.1"
-	}
+	"dependencies": {}
 }

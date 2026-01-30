@@ -6,7 +6,7 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import { LlamaCloud as LlamaCloudClient } from '@llamaindex/llama-cloud';
+import { LlamaCloud as LlamaCloudClient } from '../../sdk/index.js';
 
 export class LlamaCloud implements INodeType {
 	description: INodeTypeDescription = {

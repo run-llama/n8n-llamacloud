@@ -1,0 +1,22 @@
+name: Check For Version Mismatches
+
+on:
+  pull_request:
+
+jobs:
+  build-go:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Run version check
+        run: bash codegen/sdk-checks/e2e_check.sh
