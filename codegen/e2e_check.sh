@@ -29,8 +29,10 @@ done
 
 echo "Running with force = $force and bump = $bump"
 
-go run codegen/sdk-checks/main.go check
-last_exit_code=$(echo $?)
+go build -o codegen/sdk-checks/sdk-check codegen/sdk-checks/main.go
+./codegen/sdk-checks/sdk-check check
+last_exit_code=$?
+echo "last exist code" $last_exit_code
 
 # if you are not forcing a release
 # you can exit early if there is an
@@ -62,4 +64,7 @@ then
 fi
 
 # bump to new version
-go run codegen/sdk-checks/main.go version-bump $bump
+./codegen/sdk-checks/sdk-check version-bump $bump
+
+# remove go binary
+rm -rf ./codegen/sdk-checks/sdk-check

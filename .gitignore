@@ -9,3 +9,4 @@ yarn.lock
 .env
 guides/html/*.html
 guides/html/assets/
+codegen/sdk-checks/sdk-check

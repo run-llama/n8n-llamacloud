@@ -351,6 +351,30 @@ export interface JobCreateParams {
    * Body param: The configuration for the parsing job
    */
   parsing_configuration?: ClassifyParsingConfiguration;
+
+  /**
+   * Body param: List of webhook configurations for notifications
+   */
+  webhook_configurations?: Array<JobCreateParams.WebhookConfiguration>;
+}
+
+export namespace JobCreateParams {
+  export interface WebhookConfiguration {
+    /**
+     * List of events that trigger webhook notifications
+     */
+    webhook_events?: Array<string> | null;
+
+    /**
+     * Custom headers to include in webhook requests
+     */
+    webhook_headers?: { [key: string]: unknown } | null;
+
+    /**
+     * Webhook URL for receiving parsing notifications
+     */
+    webhook_url?: string | null;
+  }
 }
 
 export interface JobListParams extends PaginatedCursorParams {

@@ -196,6 +196,22 @@ export interface CloudConfluenceDataSource {
   user_name?: string | null;
 }
 
+export interface CloudGoogleDriveDataSource {
+  /**
+   * The ID of the Google Drive folder to read from.
+   */
+  folder_id: string;
+
+  class_name?: string;
+
+  /**
+   * A dictionary containing secret values
+   */
+  service_account_key?: { [key: string]: string } | null;
+
+  supports_access_control?: boolean;
+}
+
 /**
  * Cloud Jira Data Source integrating JiraReader.
  */

@@ -273,6 +273,11 @@ export interface ListItem {
   items: Array<ListItem.TextItem | ListItem>;
 
   /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
    * Whether the list is ordered or unordered
    */
   ordered: boolean;
@@ -281,11 +286,6 @@ export interface ListItem {
    * List of bounding boxes
    */
   bbox?: Array<BBox> | null;
-
-  /**
-   * Markdown representation preserving formatting
-   */
-  md?: string;
 
   /**
    * List item type
@@ -704,7 +704,7 @@ export interface ParsingGetResponse {
   markdown_full?: string | null;
 
   /**
-   * Result containing page-level metadata for the parsed document.
+   * Result containing metadata (page level and general) for the parsed document.
    */
   metadata?: ParsingGetResponse.Metadata | null;
 
@@ -1003,6 +1003,11 @@ export namespace ParsingGetResponse {
 
       export interface LinkItem {
         /**
+         * Markdown representation preserving formatting
+         */
+        md: string;
+
+        /**
          * Display text of the link
          */
         text: string;
@@ -1016,11 +1021,6 @@ export namespace ParsingGetResponse {
          * List of bounding boxes
          */
         bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * Markdown representation preserving formatting
-         */
-        md?: string;
 
         /**
          * Link item type
@@ -1094,7 +1094,7 @@ export namespace ParsingGetResponse {
   }
 
   /**
-   * Result containing page-level metadata for the parsed document.
+   * Result containing metadata (page level and general) for the parsed document.
    */
   export interface Metadata {
     /**
@@ -1212,6 +1212,8 @@ export interface ParsingCreateParams {
     | '2026-01-16'
     | '2026-01-21'
     | '2026-01-22'
+    | '2026-01-24'
+    | '2026-01-29'
     | 'latest'
     | (string & {});
 
@@ -1917,6 +1919,8 @@ export namespace ParsingCreateParams {
           | '2026-01-16'
           | '2026-01-21'
           | '2026-01-22'
+          | '2026-01-24'
+          | '2026-01-29'
           | 'latest'
           | (string & {})
           | null;

@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
 		"strict": true,
-		"module": "preserve",
-		"moduleResolution": "bundler",
+		"module": "NodeNext",
+		"moduleResolution": "nodenext",
 		"target": "es2019",
 		"lib": ["es2019", "es2020", "es2022.error"],
 		"removeComments": true,

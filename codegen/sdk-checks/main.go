@@ -45,8 +45,8 @@ type PackageJSON struct {
 func findVersion() (string, error) {
 	content, err := os.ReadFile(VERSION_FILE)
 	if err != nil {
-		log.Fatalf("An error occurred: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred: %s\n", err.Error())
+		return "", nil
 	}
 	pattern := regexp.MustCompile(`export const VERSION = \'([0-9].[0-9]+.[0-9]+)\'`)
 	contentStr := string(content)
@@ -58,68 +58,68 @@ func findVersion() (string, error) {
 	return "", errors.New("could not find a version for the current package")
 }
 
-func checkVersion() {
+func checkVersion() int {
 	version, err := findVersion()
 	if err != nil {
-		log.Fatalf("An error occurred: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred: %s\n", err.Error())
+		return 1
 	}
 	request, err := http.NewRequest("GET", fmt.Sprintf("https://registry.npmjs.org/%s/latest", PACKAGE_NAME), nil)
 	if err != nil {
-		log.Fatalf("An error occurred: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred: %s\n", err.Error())
+		return 1
 	}
 	client := http.Client{Timeout: 60 * time.Second}
 	response, err := client.Do(request)
 	if err != nil {
-		log.Fatalf("An error occurred: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred: %s\n", err.Error())
+		return 1
 	}
 	if response.StatusCode > 299 || response.StatusCode < 200 {
-		log.Fatalf("Error in response: %d", response.StatusCode)
-		os.Exit(1)
+		log.Printf("Error in response: %d\n", response.StatusCode)
+		return 1
 	}
 	var data map[string]any
 	err = json.NewDecoder(response.Body).Decode(&data)
 	publishedVersion, ok := data["version"]
 	if !ok {
-		log.Fatal("Could not find a published version, exiting...")
-		os.Exit(1)
+		log.Println("Could not find a published version, exiting...")
+		return 1
 	}
-	log.Printf("Found published version: %s", publishedVersion)
+	log.Printf("Found published version: %s\n", publishedVersion)
 	if publishedVersion != version {
-		log.Fatalf("Version mismatch: current is %s, published is %s; you should update!", version, publishedVersion)
-		os.Exit(2)
+		log.Printf("Version mismatch: current is %s, published is %s; you should update!\n", version, publishedVersion)
+		return 2
 	}
 	log.Println("Versions are matching, nothing else to do!")
-	os.Exit(0)
+	return 0
 }
 
-func bumpVersion(bumpType string) {
+func bumpVersion(bumpType string) int {
 	content, err := os.ReadFile(PACKAGE_JSON)
 	if err != nil {
-		log.Fatalf("An error occurred while reading package.json: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred while reading package.json: %s\n", err.Error())
+		return 1
 	}
 	var packageData PackageJSON
 	err = json.Unmarshal(content, &packageData)
 	if err != nil {
-		log.Fatalf("An error occurred while loading package.json content: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred while loading package.json content: %s\n", err.Error())
+		return 1
 	}
 	version := packageData.Version
 	log.Printf("Found package version: %s\n", version)
 	splitVersion := strings.Split(version, ".")
 	if len(splitVersion) != 3 {
-		log.Fatalf("Version does not respect SemVer convention of major.minor.patch: %s", version)
-		os.Exit(1)
+		log.Printf("Version does not respect SemVer convention of major.minor.patch: %s\n", version)
+		return 1
 	}
 	versNum := make([]int, 0, 3)
 	for _, v := range splitVersion {
 		vint, err := strconv.Atoi(v)
 		if err != nil {
-			log.Fatalf("An error occurred while converting version components to numbers: %s", err.Error())
-			os.Exit(1)
+			log.Printf("An error occurred while converting version components to numbers: %s\n", err.Error())
+			return 1
 		}
 		versNum = append(versNum, vint)
 	}
@@ -132,34 +132,35 @@ func bumpVersion(bumpType string) {
 	case Major:
 		newVers = append(newVers, strconv.Itoa(versNum[0]+1), "0", "0")
 	default:
-		log.Fatalf("Unrecognized bump type: %s", bumpType)
-		os.Exit(1)
+		log.Printf("Unrecognized bump type: %s\n", bumpType)
+		return 1
 	}
 	newVersion := strings.Join(newVers, ".")
 	packageData.Version = newVersion
 	jsonContent, err := json.MarshalIndent(packageData, "", "\t")
 	err = os.WriteFile(PACKAGE_JSON, jsonContent, 0644)
 	if err != nil {
-		log.Fatalf("An error occurred while writing package.json: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred while writing package.json: %s", err.Error())
+		return 1
 	}
 	log.Printf("Version was correctly bumped: %s -> %s\n", version, newVersion)
-	os.Exit(0)
+	return 0
 }
 
-func printCurrentVersion() {
+func printCurrentVersion() int {
 	content, err := os.ReadFile(PACKAGE_JSON)
 	if err != nil {
-		log.Fatalf("An error occurred while reading package.json: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred while reading package.json: %s", err.Error())
+		return 1
 	}
 	var packageData PackageJSON
 	err = json.Unmarshal(content, &packageData)
 	if err != nil {
-		log.Fatalf("An error occurred while loading package.json content: %s", err.Error())
-		os.Exit(1)
+		log.Printf("An error occurred while loading package.json content: %s", err.Error())
+		return 1
 	}
 	fmt.Println(packageData.Version)
+	return 0
 }
 
 func main() {
@@ -171,18 +172,21 @@ func main() {
 	subCommand := args[1]
 	switch subCommand {
 	case "check":
-		checkVersion()
+		exitCode := checkVersion()
+		os.Exit(exitCode)
 	case "version-bump":
 		if len(args) < 3 {
 			log.Fatalln("You should provide a bump type (patch, minor, major) when using the version-bump subcommand")
 			os.Exit(1)
 		}
 		bump := args[2]
-		bumpVersion(strings.ToLower(bump))
+		exitCode := bumpVersion(strings.ToLower(bump))
+		os.Exit(exitCode)
 	case "get-version":
-		printCurrentVersion()
+		exitCode := printCurrentVersion()
+		os.Exit(exitCode)
 	default:
-		log.Fatalf("Unrecognized command: %s\n", args[1])
+		log.Printf("Unrecognized command: %s\n", args[1])
 		os.Exit(1)
 	}
 }

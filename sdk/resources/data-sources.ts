@@ -76,6 +76,7 @@ export interface DataSource {
     | { [key: string]: unknown }
     | Shared.CloudS3DataSource
     | Shared.CloudAzStorageBlobDataSource
+    | Shared.CloudGoogleDriveDataSource
     | Shared.CloudOneDriveDataSource
     | Shared.CloudSharepointDataSource
     | Shared.CloudSlackDataSource
@@ -145,6 +146,7 @@ export interface DataSourceCreateParams {
     | { [key: string]: unknown }
     | Shared.CloudS3DataSource
     | Shared.CloudAzStorageBlobDataSource
+    | Shared.CloudGoogleDriveDataSource
     | Shared.CloudOneDriveDataSource
     | Shared.CloudSharepointDataSource
     | Shared.CloudSlackDataSource
@@ -215,6 +217,7 @@ export interface DataSourceUpdateParams {
     | { [key: string]: unknown }
     | Shared.CloudS3DataSource
     | Shared.CloudAzStorageBlobDataSource
+    | Shared.CloudGoogleDriveDataSource
     | Shared.CloudOneDriveDataSource
     | Shared.CloudSharepointDataSource
     | Shared.CloudSlackDataSource

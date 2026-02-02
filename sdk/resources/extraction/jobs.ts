@@ -262,6 +262,11 @@ export interface WebhookConfiguration {
     | 'parse.error'
     | 'parse.partial_success'
     | 'parse.cancelled'
+    | 'classify.pending'
+    | 'classify.success'
+    | 'classify.error'
+    | 'classify.partial_success'
+    | 'classify.cancelled'
     | 'unmapped_event'
   > | null;
 

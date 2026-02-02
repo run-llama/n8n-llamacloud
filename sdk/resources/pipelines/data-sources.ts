@@ -91,6 +91,7 @@ export interface PipelineDataSource {
     | { [key: string]: unknown }
     | Shared.CloudS3DataSource
     | Shared.CloudAzStorageBlobDataSource
+    | Shared.CloudGoogleDriveDataSource
     | Shared.CloudOneDriveDataSource
     | Shared.CloudSharepointDataSource
     | Shared.CloudSlackDataSource
