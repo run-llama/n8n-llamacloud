@@ -9,7 +9,7 @@ import {
 } from 'n8n-workflow/dist/index.js';
 
 import fs from 'fs';
-import LlamaCloud from '@llamaindex/llama-cloud';
+import LlamaCloud from '../../sdk/index.js';
 
 export class LlamaExtract implements INodeType {
 	description: INodeTypeDescription = {
