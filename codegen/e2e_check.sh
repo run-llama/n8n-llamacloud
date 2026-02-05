@@ -59,7 +59,7 @@ then
 	rm -rf sdk/
 	git clone https://github.com/run-llama/llama-cloud-ts
 	mkdir sdk/
-	cp -r llama-cloud-ts/src/ sdk/
+	cp -r llama-cloud-ts/src/* sdk/
 	rm -rf llama-cloud-ts/
 fi
 

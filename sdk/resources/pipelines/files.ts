@@ -93,16 +93,16 @@ export class Files extends APIResource {
 export type PipelineFilesPaginatedPipelineFiles = PaginatedPipelineFiles<PipelineFile>;
 
 /**
- * Schema for a file that is associated with a pipeline.
+ * A file associated with a pipeline.
  */
 export interface PipelineFile {
   /**
-   * Unique identifier
+   * Unique identifier for the pipeline file.
    */
   id: string;
 
   /**
-   * The ID of the pipeline that the file is associated with
+   * The ID of the pipeline that the file is associated with.
    */
   pipeline_id: string;
 
@@ -114,88 +114,88 @@ export interface PipelineFile {
   } | null;
 
   /**
-   * Creation datetime
+   * When the pipeline file was created.
    */
   created_at?: string | null;
 
   /**
-   * Custom metadata for the file
+   * Custom metadata for the file.
    */
   custom_metadata?: {
     [key: string]: { [key: string]: unknown } | Array<unknown> | string | number | boolean | null;
   } | null;
 
   /**
-   * The ID of the data source that the file belongs to
+   * The ID of the data source that the file belongs to.
    */
   data_source_id?: string | null;
 
   /**
-   * The ID of the file in the external system
+   * The ID of the file in the external system.
    */
   external_file_id?: string | null;
 
   /**
-   * The ID of the file
+   * The ID of the file.
    */
   file_id?: string | null;
 
   /**
-   * Size of the file in bytes
+   * Size of the file in bytes.
    */
   file_size?: number | null;
 
   /**
-   * File type (e.g. pdf, docx, etc.)
+   * File type (e.g. pdf, docx, etc.).
    */
   file_type?: string | null;
 
   /**
-   * The number of pages that have been indexed for this file
+   * The number of pages that have been indexed for this file.
    */
   indexed_page_count?: number | null;
 
   /**
-   * The last modified time of the file
+   * The last modified time of the file.
    */
   last_modified_at?: string | null;
 
   /**
-   * Name of the file
+   * Name of the file.
    */
   name?: string | null;
 
   /**
-   * Permission information for the file
+   * Permission information for the file.
    */
   permission_info?: {
     [key: string]: { [key: string]: unknown } | Array<unknown> | string | number | boolean | null;
   } | null;
 
   /**
-   * The ID of the project that the file belongs to
+   * The ID of the project that the file belongs to.
    */
   project_id?: string | null;
 
   /**
-   * Resource information for the file
+   * Resource information for the file.
    */
   resource_info?: {
     [key: string]: { [key: string]: unknown } | Array<unknown> | string | number | boolean | null;
   } | null;
 
   /**
-   * Status of the pipeline file
+   * Status of the pipeline file.
    */
   status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'SUCCESS' | 'ERROR' | 'CANCELLED' | null;
 
   /**
-   * The last time the status was updated
+   * The last time the status was updated.
    */
   status_updated_at?: string | null;
 
   /**
-   * Update datetime
+   * When the pipeline file was last updated.
    */
   updated_at?: string | null;
 }
