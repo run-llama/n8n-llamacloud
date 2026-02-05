@@ -13,7 +13,7 @@ import { sleep } from './internal/utils/sleep';
 export type { Logger, LogLevel } from './internal/utils/log';
 import { castToError, isAbortError } from './internal/errors';
 import type { APIResponseProps } from './internal/parse';
-import { getPlatformHeaders } from './internal/detect-platform';
+import { getPlatformHeaders, isRunningInBrowser } from './internal/detect-platform';
 import * as Shims from './internal/shims';
 import * as Opts from './internal/request-options';
 import * as qs from './internal/qs';
@@ -75,7 +75,13 @@ import {
 } from './resources/files';
 import {
 	BBox,
+	CodeItem,
 	FailPageMode,
+	FooterItem,
+	HeaderItem,
+	HeadingItem,
+	ImageItem,
+	LinkItem,
 	ListItem,
 	LlamaParseSupportedFileExtensions,
 	Parsing,
@@ -90,6 +96,8 @@ import {
 	ParsingListResponsesPaginatedCursor,
 	ParsingMode,
 	StatusEnum,
+	TableItem,
+	TextItem,
 } from './resources/parsing';
 import {
 	Project,
@@ -251,7 +259,7 @@ export interface ClientOptions {
  * API Client for interfacing with the Llama Cloud API.
  */
 export class LlamaCloud {
-	apiKey: string;
+	apiKey: string | undefined;
 
 	baseURL: string;
 	maxRetries: number;
@@ -282,7 +290,7 @@ export class LlamaCloud {
 		apiKey = readEnv('LLAMA_CLOUD_API_KEY'),
 		...opts
 	}: ClientOptions = {}) {
-		if (apiKey === undefined) {
+		if (apiKey === undefined && !isRunningInBrowser()) {
 			throw new Errors.LlamaCloudError(
 				"The LLAMA_CLOUD_API_KEY environment variable is missing or empty; either provide it, or instantiate the LlamaCloud client with an apiKey option, like new LlamaCloud({ apiKey: 'My API Key' }).",
 			);
@@ -293,6 +301,13 @@ export class LlamaCloud {
 			...opts,
 			baseURL: baseURL || `https://api.cloud.llamaindex.ai`,
 		};
+
+		if (apiKey === undefined && isRunningInBrowser()) {
+			options.fetchOptions = {
+				credentials: 'include',
+				...options.fetchOptions,
+			} as MergedRequestInit;
+		}
 
 		this.baseURL = options.baseURL!;
 		this.timeout = options.timeout ?? LlamaCloud.DEFAULT_TIMEOUT /* 1 minute */;
@@ -349,7 +364,10 @@ export class LlamaCloud {
 	}
 
 	protected async authHeaders(opts: FinalRequestOptions): Promise<NullableHeaders | undefined> {
-		return buildHeaders([{ Authorization: `Bearer ${this.apiKey}` }]);
+		if (this.apiKey) {
+			return buildHeaders([{ Authorization: `Bearer ${this.apiKey}` }]);
+		}
+		return undefined;
 	}
 
 	protected stringifyQuery(query: Record<string, unknown>): string {
@@ -634,9 +652,10 @@ export class LlamaCloud {
 		controller: AbortController,
 	): Promise<Response> {
 		const { signal, method, ...options } = init || {};
-		if (signal) signal.addEventListener('abort', () => controller.abort());
+		const abort = this._makeAbort(controller);
+		if (signal) signal.addEventListener('abort', abort, { once: true });
 
-		const timeout = setTimeout(() => controller.abort(), ms);
+		const timeout = setTimeout(abort, ms);
 
 		const isReadableBody =
 			((globalThis as any).ReadableStream &&
@@ -662,6 +681,7 @@ export class LlamaCloud {
 			return await this.fetch.call(undefined, url, fetchOptions);
 		} finally {
 			clearTimeout(timeout);
+			if (signal) signal.removeEventListener('abort', abort);
 		}
 	}
 
@@ -811,6 +831,12 @@ export class LlamaCloud {
 		this.validateHeaders(headers);
 
 		return headers.values;
+	}
+
+	private _makeAbort(controller: AbortController) {
+		// note: we can't just inline this method inside `fetchWithTimeout()` because then the closure
+		//       would capture all request options, and cause a memory leak.
+		return () => controller.abort();
 	}
 
 	private buildBody({ options: { body, headers: rawHeaders } }: { options: FinalRequestOptions }): {
@@ -965,13 +991,21 @@ export declare namespace LlamaCloud {
 	export {
 		Parsing as Parsing,
 		type BBox as BBox,
+		type CodeItem as CodeItem,
 		type FailPageMode as FailPageMode,
+		type FooterItem as FooterItem,
+		type HeaderItem as HeaderItem,
+		type HeadingItem as HeadingItem,
+		type ImageItem as ImageItem,
+		type LinkItem as LinkItem,
 		type ListItem as ListItem,
 		type LlamaParseSupportedFileExtensions as LlamaParseSupportedFileExtensions,
 		type ParsingJob as ParsingJob,
 		type ParsingLanguages as ParsingLanguages,
 		type ParsingMode as ParsingMode,
 		type StatusEnum as StatusEnum,
+		type TableItem as TableItem,
+		type TextItem as TextItem,
 		type ParsingCreateResponse as ParsingCreateResponse,
 		type ParsingListResponse as ParsingListResponse,
 		type ParsingGetResponse as ParsingGetResponse,
