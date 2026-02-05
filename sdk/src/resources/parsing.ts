@@ -26,7 +26,7 @@ export class Parsing extends APIResource {
       const configuration = JSON.stringify(body);
 
       return this._client.post(
-        '/api/v2/parse',
+        '/api/v2/parse/upload',
         multipartFormRequestOptions(
           {
             query: { organization_id, project_id },
@@ -187,6 +187,10 @@ export class Parsing extends APIResource {
     const { expand, ...createParams } = params;
     const { pollingInterval, maxInterval, timeout, backoff, verbose, ...requestOptions } = options || {};
 
+    if (!expand || (expand && expand.length == 0)) {
+      throw new Error('you should pass a non-empty array as a parameter for `expand`');
+    }
+
     // Create the parsing job
     const job = await this.create(createParams, requestOptions);
 
@@ -261,16 +265,168 @@ export interface BBox {
   start_index?: number | null;
 }
 
+export interface CodeItem {
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * Code content
+   */
+  value: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Programming language identifier
+   */
+  language?: string | null;
+
+  /**
+   * Code block item type
+   */
+  type?: 'code';
+}
+
 /**
  * Enum for representing the different available page error handling modes.
  */
 export type FailPageMode = 'raw_text' | 'blank_page' | 'error_message';
 
+export interface FooterItem {
+  /**
+   * List of items within the footer
+   */
+  items: Array<TextItem | HeadingItem | ListItem | CodeItem | TableItem | ImageItem | LinkItem>;
+
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Page footer container
+   */
+  type?: 'footer';
+}
+
+export interface HeaderItem {
+  /**
+   * List of items within the header
+   */
+  items: Array<TextItem | HeadingItem | ListItem | CodeItem | TableItem | ImageItem | LinkItem>;
+
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Page header container
+   */
+  type?: 'header';
+}
+
+export interface HeadingItem {
+  /**
+   * Heading level (1-6)
+   */
+  level: number;
+
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * Heading text content
+   */
+  value: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Heading item type
+   */
+  type?: 'heading';
+}
+
+export interface ImageItem {
+  /**
+   * Image caption
+   */
+  caption: string;
+
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * URL to the image
+   */
+  url: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Image item type
+   */
+  type?: 'image';
+}
+
+export interface LinkItem {
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * Display text of the link
+   */
+  text: string;
+
+  /**
+   * URL of the link
+   */
+  url: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Link item type
+   */
+  type?: 'link';
+}
+
 export interface ListItem {
   /**
    * List of nested text or list items
    */
-  items: Array<ListItem.TextItem | ListItem>;
+  items: Array<TextItem | ListItem>;
 
   /**
    * Markdown representation preserving formatting
@@ -291,30 +447,6 @@ export interface ListItem {
    * List item type
    */
   type?: 'list';
-}
-
-export namespace ListItem {
-  export interface TextItem {
-    /**
-     * Markdown representation preserving formatting
-     */
-    md: string;
-
-    /**
-     * Text content
-     */
-    value: string;
-
-    /**
-     * List of bounding boxes
-     */
-    bbox?: Array<ParsingAPI.BBox> | null;
-
-    /**
-     * Text item type
-     */
-    type?: 'text';
-  }
 }
 
 /**
@@ -591,6 +723,72 @@ export type ParsingMode =
  */
 export type StatusEnum = 'PENDING' | 'SUCCESS' | 'ERROR' | 'PARTIAL_SUCCESS' | 'CANCELLED';
 
+export interface TableItem {
+  /**
+   * CSV representation of the table
+   */
+  csv: string;
+
+  /**
+   * HTML representation of the table
+   */
+  html: string;
+
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * Table data as array of arrays (string, number, or null)
+   */
+  rows: Array<Array<string | number | null>>;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * List of page numbers with tables that were merged into this table (e.g., [1, 2,
+   * 3, 4])
+   */
+  merged_from_pages?: Array<number> | null;
+
+  /**
+   * Populated when merged into another table. Page number where the full merged
+   * table begins (used on empty tables).
+   */
+  merged_into_page?: number | null;
+
+  /**
+   * Table item type
+   */
+  type?: 'table';
+}
+
+export interface TextItem {
+  /**
+   * Markdown representation preserving formatting
+   */
+  md: string;
+
+  /**
+   * Text content
+   */
+  value: string;
+
+  /**
+   * List of bounding boxes
+   */
+  bbox?: Array<BBox> | null;
+
+  /**
+   * Text item type
+   */
+  type?: 'text';
+}
+
 /**
  * Response schema for a parse job.
  */
@@ -717,6 +915,11 @@ export interface ParsingGetResponse {
    * Plain text result (if requested)
    */
   text?: ParsingGetResponse.Text | null;
+
+  /**
+   * Full raw text content (if requested)
+   */
+  text_full?: string | null;
 }
 
 export namespace ParsingGetResponse {
@@ -823,13 +1026,15 @@ export namespace ParsingGetResponse {
        * List of structured items on the page
        */
       items: Array<
-        | StructuredResultPage.TextItem
-        | StructuredResultPage.HeadingItem
+        | ParsingAPI.TextItem
+        | ParsingAPI.HeadingItem
         | ParsingAPI.ListItem
-        | StructuredResultPage.CodeItem
-        | StructuredResultPage.TableItem
-        | StructuredResultPage.ImageItem
-        | StructuredResultPage.LinkItem
+        | ParsingAPI.CodeItem
+        | ParsingAPI.TableItem
+        | ParsingAPI.ImageItem
+        | ParsingAPI.LinkItem
+        | ParsingAPI.HeaderItem
+        | ParsingAPI.FooterItem
       >;
 
       /**
@@ -850,183 +1055,7 @@ export namespace ParsingGetResponse {
       /**
        * Success indicator
        */
-      success?: true;
-    }
-
-    export namespace StructuredResultPage {
-      export interface TextItem {
-        /**
-         * Markdown representation preserving formatting
-         */
-        md: string;
-
-        /**
-         * Text content
-         */
-        value: string;
-
-        /**
-         * List of bounding boxes
-         */
-        bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * Text item type
-         */
-        type?: 'text';
-      }
-
-      export interface HeadingItem {
-        /**
-         * Heading level (1-6)
-         */
-        level: number;
-
-        /**
-         * Markdown representation preserving formatting
-         */
-        md: string;
-
-        /**
-         * Heading text content
-         */
-        value: string;
-
-        /**
-         * List of bounding boxes
-         */
-        bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * Heading item type
-         */
-        type?: 'heading';
-      }
-
-      export interface CodeItem {
-        /**
-         * Markdown representation preserving formatting
-         */
-        md: string;
-
-        /**
-         * Code content
-         */
-        value: string;
-
-        /**
-         * List of bounding boxes
-         */
-        bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * Programming language identifier
-         */
-        language?: string | null;
-
-        /**
-         * Code block item type
-         */
-        type?: 'code';
-      }
-
-      export interface TableItem {
-        /**
-         * CSV representation of the table
-         */
-        csv: string;
-
-        /**
-         * HTML representation of the table
-         */
-        html: string;
-
-        /**
-         * Markdown representation preserving formatting
-         */
-        md: string;
-
-        /**
-         * Table data as array of arrays (string, number, or null)
-         */
-        rows: Array<Array<string | number | null>>;
-
-        /**
-         * List of bounding boxes
-         */
-        bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * List of page numbers with tables that were merged into this table (e.g., [1, 2,
-         * 3, 4])
-         */
-        merged_from_pages?: Array<number> | null;
-
-        /**
-         * Populated when merged into another table. Page number where the full merged
-         * table begins (used on empty tables).
-         */
-        merged_into_page?: number | null;
-
-        /**
-         * Table item type
-         */
-        type?: 'table';
-      }
-
-      export interface ImageItem {
-        /**
-         * Image caption
-         */
-        caption: string;
-
-        /**
-         * Markdown representation preserving formatting
-         */
-        md: string;
-
-        /**
-         * URL to the image
-         */
-        url: string;
-
-        /**
-         * List of bounding boxes
-         */
-        bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * Image item type
-         */
-        type?: 'image';
-      }
-
-      export interface LinkItem {
-        /**
-         * Markdown representation preserving formatting
-         */
-        md: string;
-
-        /**
-         * Display text of the link
-         */
-        text: string;
-
-        /**
-         * URL of the link
-         */
-        url: string;
-
-        /**
-         * List of bounding boxes
-         */
-        bbox?: Array<ParsingAPI.BBox> | null;
-
-        /**
-         * Link item type
-         */
-        type?: 'link';
-      }
+      success: true;
     }
 
     export interface FailedStructuredPage {
@@ -1043,7 +1072,7 @@ export namespace ParsingGetResponse {
       /**
        * Failure indicator
        */
-      success?: boolean;
+      success: boolean;
     }
   }
 
@@ -1072,7 +1101,17 @@ export namespace ParsingGetResponse {
       /**
        * Success indicator
        */
-      success?: true;
+      success: true;
+
+      /**
+       * Footer of the page in markdown
+       */
+      footer?: string | null;
+
+      /**
+       * Header of the page in markdown
+       */
+      header?: string | null;
     }
 
     export interface FailedMarkdownPage {
@@ -1089,7 +1128,7 @@ export namespace ParsingGetResponse {
       /**
        * Failure indicator
        */
-      success?: boolean;
+      success: boolean;
     }
   }
 
@@ -2097,13 +2136,21 @@ export interface ParsingGetParams {
 export declare namespace Parsing {
   export {
     type BBox as BBox,
+    type CodeItem as CodeItem,
     type FailPageMode as FailPageMode,
+    type FooterItem as FooterItem,
+    type HeaderItem as HeaderItem,
+    type HeadingItem as HeadingItem,
+    type ImageItem as ImageItem,
+    type LinkItem as LinkItem,
     type ListItem as ListItem,
     type LlamaParseSupportedFileExtensions as LlamaParseSupportedFileExtensions,
     type ParsingJob as ParsingJob,
     type ParsingLanguages as ParsingLanguages,
     type ParsingMode as ParsingMode,
     type StatusEnum as StatusEnum,
+    type TableItem as TableItem,
+    type TextItem as TextItem,
     type ParsingCreateResponse as ParsingCreateResponse,
     type ParsingListResponse as ParsingListResponse,
     type ParsingGetResponse as ParsingGetResponse,
