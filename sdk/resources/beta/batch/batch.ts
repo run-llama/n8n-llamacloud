@@ -827,7 +827,7 @@ export interface BatchListParams extends PaginatedBatchItemsParams {
   directory_id?: string | null;
 
   /**
-   * Type of batch processing operation.
+   * Filter by job type (PARSE, EXTRACT, CLASSIFY)
    */
   job_type?: 'parse' | 'extract' | 'classify' | null;
 
@@ -836,7 +836,7 @@ export interface BatchListParams extends PaginatedBatchItemsParams {
   project_id?: string | null;
 
   /**
-   * Status of a batch processing job.
+   * Filter by job status (PENDING, RUNNING, COMPLETED, FAILED, CANCELLED)
    */
   status?: 'pending' | 'running' | 'dispatched' | 'completed' | 'failed' | 'cancelled' | null;
 }

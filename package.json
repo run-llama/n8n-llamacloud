@@ -1,6 +1,6 @@
 {
 	"name": "@llamaindex/n8n-nodes-llamacloud",
-	"version": "4.1.0",
+	"version": "4.2.0",
 	"description": "LlamaCloud integration with n8n",
 	"keywords": [
 		"n8n-community-node-package"
