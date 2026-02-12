@@ -551,14 +551,14 @@ export interface JobItemListParams extends PaginatedBatchItemsParams {
   project_id?: string | null;
 
   /**
-   * Status of an individual file in a batch job.
+   * Filter items by status
    */
   status?: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped' | 'cancelled' | null;
 }
 
 export interface JobItemGetProcessingResultsParams {
   /**
-   * Type of batch processing operation.
+   * Filter results by job type
    */
   job_type?: 'parse' | 'extract' | 'classify' | null;
 

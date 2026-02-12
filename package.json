@@ -1,6 +1,6 @@
 {
 	"name": "@llamaindex/n8n-nodes-llamacloud",
-	"version": "4.1.0",
+	"version": "4.2.0",
 	"description": "LlamaCloud integration with n8n",
 	"keywords": [
 		"n8n-community-node-package"
@@ -22,16 +22,16 @@
 		"url": "https://github.com/run-llama/n8n-llamacloud.git"
 	},
 	"engines": {
-		"node": ">=20.15"
+		"node": "\u003e=20.15"
 	},
 	"main": "index.js",
 	"scripts": {
-		"build": "npx rimraf dist && tsc && gulp build:icons",
+		"build": "npx rimraf dist \u0026\u0026 tsc \u0026\u0026 gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint nodes credentials package.json",
 		"lintfix": "eslint nodes credentials package.json --fix",
-		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+		"prepublishOnly": "npm run build \u0026\u0026 npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
 	},
 	"files": [
 		"dist"
