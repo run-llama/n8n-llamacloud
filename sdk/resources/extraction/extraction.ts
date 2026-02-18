@@ -37,7 +37,7 @@ import {
 } from './extraction-agents/extraction-agents';
 import { APIPromise } from '../../core/api-promise';
 import { RequestOptions } from '../../internal/request-options';
-import { PollingOptions } from '../../core/polling';
+import { PollingOptions, DEFAULT_TIMEOUT } from '../../core/polling';
 
 export class Extraction extends APIResource {
   jobs: JobsAPI.Jobs = new JobsAPI.Jobs(this._client);
@@ -109,7 +109,7 @@ export class Extraction extends APIResource {
     await this.jobs.waitForCompletion(job.id, {
       pollingInterval,
       maxInterval,
-      timeout: timeout || 2000.0,
+      timeout: timeout || DEFAULT_TIMEOUT,
       backoff,
       verbose,
       ...requestOptions,

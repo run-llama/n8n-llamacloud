@@ -76,6 +76,8 @@ export interface PollingOptions {
   verbose?: boolean | undefined;
 }
 
+export const DEFAULT_TIMEOUT = 7200.0; // 2 hours
+
 /**
  * Asynchronous polling utility that polls until a job completes.
  *
@@ -98,7 +100,7 @@ export async function pollUntilComplete<T>(
   const {
     pollingInterval = 1.0,
     maxInterval = 5.0,
-    timeout = 2000.0,
+    timeout = DEFAULT_TIMEOUT,
     backoff = 'linear',
     verbose = false,
   } = options;

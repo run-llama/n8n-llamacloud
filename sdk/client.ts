@@ -592,7 +592,7 @@ export class LlamaCloud {
 			loggerFor(this).info(`${responseInfo} - ${retryMessage}`);
 
 			const errText = await response.text().catch((err: any) => castToError(err).message);
-			const errJSON = safeJSON(errText);
+			const errJSON = safeJSON(errText) as any;
 			const errMessage = errJSON ? undefined : errText;
 
 			loggerFor(this).debug(
@@ -877,6 +877,14 @@ export class LlamaCloud {
 			return {
 				bodyHeaders: undefined,
 				body: Shims.ReadableStreamFrom(body as AsyncIterable<Uint8Array>),
+			};
+		} else if (
+			typeof body === 'object' &&
+			headers.values.get('content-type') === 'application/x-www-form-urlencoded'
+		) {
+			return {
+				bodyHeaders: { 'content-type': 'application/x-www-form-urlencoded' },
+				body: this.stringifyQuery(body as Record<string, unknown>),
 			};
 		} else {
 			return this.#encoder({ body, headers });

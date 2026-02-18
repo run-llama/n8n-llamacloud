@@ -9,7 +9,7 @@ import { type Uploadable } from '../../core/uploads';
 import { RequestOptions } from '../../internal/request-options';
 import { multipartFormRequestOptions } from '../../internal/uploads';
 import { path } from '../../internal/utils/path';
-import { pollUntilComplete, PollingOptions } from '../../core/polling';
+import { pollUntilComplete, PollingOptions, DEFAULT_TIMEOUT } from '../../core/polling';
 
 export class Jobs extends APIResource {
   /**
@@ -164,7 +164,7 @@ export class Jobs extends APIResource {
     await this.waitForCompletion(job.id, {
       pollingInterval,
       maxInterval,
-      timeout: timeout || 2000.0,
+      timeout: timeout || DEFAULT_TIMEOUT,
       backoff,
       verbose,
       ...requestOptions,

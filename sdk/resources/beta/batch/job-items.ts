@@ -498,6 +498,8 @@ export namespace JobItemGetProcessingResultsResponse {
 
         spreadsheet_force_formula_computation?: boolean | null;
 
+        spreadsheet_include_hidden_sheets?: boolean | null;
+
         strict_mode_buggy_font?: boolean | null;
 
         strict_mode_image_extraction?: boolean | null;
