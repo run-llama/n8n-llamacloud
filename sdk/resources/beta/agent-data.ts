@@ -261,6 +261,8 @@ export namespace AgentDataAggregateParams {
   export interface Filter {
     eq?: number | string | (string & {}) | null;
 
+    excludes?: Array<number | string | (string & {}) | null>;
+
     gt?: number | string | (string & {}) | null;
 
     gte?: number | string | (string & {}) | null;
@@ -270,6 +272,8 @@ export namespace AgentDataAggregateParams {
     lt?: number | string | (string & {}) | null;
 
     lte?: number | string | (string & {}) | null;
+
+    ne?: number | string | (string & {}) | null;
   }
 }
 
@@ -307,6 +311,8 @@ export namespace AgentDataDeleteByQueryParams {
   export interface Filter {
     eq?: number | string | (string & {}) | null;
 
+    excludes?: Array<number | string | (string & {}) | null>;
+
     gt?: number | string | (string & {}) | null;
 
     gte?: number | string | (string & {}) | null;
@@ -316,6 +322,8 @@ export namespace AgentDataDeleteByQueryParams {
     lt?: number | string | (string & {}) | null;
 
     lte?: number | string | (string & {}) | null;
+
+    ne?: number | string | (string & {}) | null;
   }
 }
 
@@ -377,6 +385,8 @@ export namespace AgentDataSearchParams {
   export interface Filter {
     eq?: number | string | (string & {}) | null;
 
+    excludes?: Array<number | string | (string & {}) | null>;
+
     gt?: number | string | (string & {}) | null;
 
     gte?: number | string | (string & {}) | null;
@@ -386,6 +396,8 @@ export namespace AgentDataSearchParams {
     lt?: number | string | (string & {}) | null;
 
     lte?: number | string | (string & {}) | null;
+
+    ne?: number | string | (string & {}) | null;
   }
 }
 

@@ -6,7 +6,7 @@ import { APIPromise } from '../../core/api-promise';
 import { PagePromise, PaginatedCursor, type PaginatedCursorParams } from '../../core/pagination';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
-import { pollUntilComplete, PollingOptions } from '../../core/polling';
+import { pollUntilComplete, PollingOptions, DEFAULT_TIMEOUT } from '../../core/polling';
 
 export class Jobs extends APIResource {
   /**
@@ -127,7 +127,7 @@ export class Jobs extends APIResource {
     return await pollUntilComplete(getStatus, isComplete, isError, getErrorMessage, {
       pollingInterval,
       maxInterval,
-      timeout: timeout || 300.0, // Default to 300 seconds for classifier
+      timeout: timeout || DEFAULT_TIMEOUT,
       backoff,
       verbose,
     });

@@ -5,7 +5,7 @@ import { APIPromise } from '../../core/api-promise';
 import { PagePromise, PaginatedCursor, type PaginatedCursorParams } from '../../core/pagination';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
-import { pollUntilComplete, PollingOptions } from '../../core/polling';
+import { pollUntilComplete, PollingOptions, DEFAULT_TIMEOUT } from '../../core/polling';
 
 export class Split extends APIResource {
   /**
@@ -101,7 +101,7 @@ export class Split extends APIResource {
     const pollingOptions: PollingOptions = {
       pollingInterval: pollingInterval ?? 1.0,
       maxInterval: maxInterval ?? 5.0,
-      timeout: timeout ?? 2000.0,
+      timeout: timeout ?? DEFAULT_TIMEOUT,
       backoff: backoff ?? 'linear',
       verbose: verbose ?? false,
     };
@@ -423,7 +423,7 @@ export interface SplitGetResponse {
 
 export interface SplitCreateParams {
   /**
-   * Body param: Categories to split the document into.
+   * Body param: Categories to split documents into.
    */
   categories: Array<SplitCategory>;
 
@@ -443,14 +443,14 @@ export interface SplitCreateParams {
   project_id?: string | null;
 
   /**
-   * Body param: Strategy for splitting the document.
+   * Body param: Strategy for splitting documents.
    */
   splitting_strategy?: SplitCreateParams.SplittingStrategy;
 }
 
 export namespace SplitCreateParams {
   /**
-   * Strategy for splitting the document.
+   * Strategy for splitting documents.
    */
   export interface SplittingStrategy {
     /**
