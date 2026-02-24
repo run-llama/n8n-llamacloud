@@ -1,4 +1,3 @@
-/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 import { type RequestOptions } from './request-options';
 import type { FilePropertyBag, Fetch } from './builtin-types';
 import type { LlamaCloud } from '../client';
@@ -14,14 +13,8 @@ interface BunFile extends Blob {
 
 export const checkFileSupport = () => {
   if (typeof File === 'undefined') {
-    const { process } = globalThis as any;
-    const isOldNode =
-      typeof process?.versions?.node === 'string' && parseInt(process.versions.node.split('.')) < 20;
     throw new Error(
-      '`File` is not defined as a global, which is required for file uploads.' +
-        (isOldNode ?
-          " Update to Node 20 LTS or newer, or set `globalThis.File` to `import('node:buffer').File`."
-        : ''),
+      '`File` is not defined as a global, which is required for file uploads. Update to Node 20 LTS or newer.',
     );
   }
 };

@@ -1,5 +1,4 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 
 import { LlamaCloudError } from '../../core/error';
 import { encodeUTF8 } from './bytes';
@@ -7,8 +6,8 @@ import { encodeUTF8 } from './bytes';
 export const toBase64 = (data: string | Uint8Array | null | undefined): string => {
   if (!data) return '';
 
-  if (typeof (globalThis as any).Buffer !== 'undefined') {
-    return (globalThis as any).Buffer.from(data).toString('base64');
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(data).toString('base64');
   }
 
   if (typeof data === 'string') {
@@ -23,8 +22,8 @@ export const toBase64 = (data: string | Uint8Array | null | undefined): string =
 };
 
 export const fromBase64 = (str: string): Uint8Array => {
-  if (typeof (globalThis as any).Buffer !== 'undefined') {
-    const buf = (globalThis as any).Buffer.from(str, 'base64');
+  if (typeof Buffer !== 'undefined') {
+    const buf = Buffer.from(str, 'base64');
     return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
   }
 

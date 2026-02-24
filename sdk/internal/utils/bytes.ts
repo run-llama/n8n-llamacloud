@@ -1,4 +1,3 @@
-/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 export function concatBytes(buffers: Uint8Array[]): Uint8Array {
   let length = 0;
   for (const buffer of buffers) {
@@ -19,7 +18,7 @@ export function encodeUTF8(str: string) {
   let encoder;
   return (
     encodeUTF8_ ??
-    ((encoder = new (globalThis as any).TextEncoder()), (encodeUTF8_ = encoder.encode.bind(encoder)))
+    ((encoder = new TextEncoder()), (encodeUTF8_ = encoder.encode.bind(encoder)))
   )(str);
 }
 
@@ -28,6 +27,6 @@ export function decodeUTF8(bytes: Uint8Array) {
   let decoder;
   return (
     decodeUTF8_ ??
-    ((decoder = new (globalThis as any).TextDecoder()), (decodeUTF8_ = decoder.decode.bind(decoder)))
+    ((decoder = new TextDecoder()), (decodeUTF8_ = decoder.decode.bind(decoder)))
   )(bytes);
 }

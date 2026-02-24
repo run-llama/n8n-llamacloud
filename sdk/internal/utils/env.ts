@@ -1,5 +1,4 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
-/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 
 /**
  * Read an environment variable.
@@ -7,13 +6,8 @@
  * Trims beginning and trailing whitespace.
  *
  * Will return undefined if the environment variable doesn't exist or cannot be accessed.
+ * In n8n, credentials are always passed explicitly so this returns undefined by default.
  */
-export const readEnv = (env: string): string | undefined => {
-  if (typeof (globalThis as any).process !== 'undefined') {
-    return (globalThis as any).process.env?.[env]?.trim() ?? undefined;
-  }
-  if (typeof (globalThis as any).Deno !== 'undefined') {
-    return (globalThis as any).Deno.env?.get?.(env)?.trim();
-  }
+export const readEnv = (_env: string): string | undefined => {
   return undefined;
 };

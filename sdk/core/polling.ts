@@ -1,5 +1,6 @@
 // File manually added for polling utilities. See CONTRIBUTING.md for details.
-/* eslint-disable @n8n/community-nodes/no-restricted-globals, no-console */
+
+import { setTimeout } from '../internal/utils/timer';
 
 /**
  * Backoff strategy for polling intervals
@@ -103,25 +104,19 @@ export async function pollUntilComplete<T>(
     maxInterval = 5.0,
     timeout = DEFAULT_TIMEOUT,
     backoff = 'linear',
-    verbose = false,
   } = options;
 
   const startTime = Date.now();
-  let tries = 0;
   let currentInterval = pollingInterval;
 
   while (true) {
     await new Promise((resolve) => setTimeout(resolve, currentInterval * 1000));
-    tries++;
 
     // Get current status
     const status = await getStatusFn();
 
     // Check if complete
     if (isCompleteFn(status)) {
-      if (verbose && tries > 1) {
-        console.log(`\nCompleted after ${tries} checks`);
-      }
       return status;
     }
 
@@ -135,11 +130,6 @@ export async function pollUntilComplete<T>(
     const elapsed = (Date.now() - startTime) / 1000;
     if (elapsed > timeout) {
       throw new PollingTimeoutError(`Polling timed out after ${elapsed.toFixed(1)}s (timeout: ${timeout}s)`);
-    }
-
-    // Print progress
-    if (verbose && tries % 10 === 0) {
-      process.stdout.write('.');
     }
 
     // Calculate next interval
