@@ -7,7 +7,6 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import fs from 'fs';
 import LlamaCloud from '../../sdk/index.js';
 
 export class LlamaSheets implements INodeType {
@@ -66,8 +65,8 @@ export class LlamaSheets implements INodeType {
 				noDataExpression: true,
 			},
 			{
-				displayName: 'File Path',
-				name: 'filePath',
+				displayName: 'Binary Property',
+				name: 'binaryPropertyName',
 				type: 'string',
 				required: true,
 				displayOptions: {
@@ -76,9 +75,9 @@ export class LlamaSheets implements INodeType {
 						resource: ['sheets'],
 					},
 				},
-				default: '',
-				placeholder: '/User/user/Desktop/file.xlsx',
-				description: 'Path to your file',
+				default: 'data',
+				placeholder: 'data',
+				description: 'Name of the binary property containing the Excel file to parse',
 			},
 		],
 	};
@@ -93,14 +92,19 @@ export class LlamaSheets implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			if (resource === 'sheets') {
 				if (operation === 'sheets') {
-					// Get email input
-					const filePath = this.getNodeParameter('filePath', i) as string;
+					// Get binary data input
+					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
 					const client = new LlamaCloud({ apiKey: apiKey });
+					const file = new File([buffer], binaryData.fileName || 'file', {
+						type: binaryData.mimeType,
+					});
 					const fileObj = await client.files.create({
-						file: fs.createReadStream(filePath),
+						file: file,
 						purpose: 'sheet',
 					});
 					const fileId = fileObj.id;

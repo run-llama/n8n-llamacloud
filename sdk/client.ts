@@ -1,4 +1,5 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
+/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 
 import type { RequestInit, RequestInfo, BodyInit } from './internal/builtin-types';
 import type {

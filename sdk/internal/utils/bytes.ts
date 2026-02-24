@@ -1,3 +1,4 @@
+/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 export function concatBytes(buffers: Uint8Array[]): Uint8Array {
   let length = 0;
   for (const buffer of buffers) {

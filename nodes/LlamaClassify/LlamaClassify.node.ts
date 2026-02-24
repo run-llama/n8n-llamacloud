@@ -7,7 +7,6 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import fs from 'fs';
 import LlamaCloud from '../../sdk/index.js';
 import { ClassifierRule } from '../../sdk/resources/classifier.js';
 
@@ -107,8 +106,8 @@ export class LlamaClassify implements INodeType {
 				},
 			},
 			{
-				displayName: 'File Path',
-				name: 'filePath',
+				displayName: 'Binary Property',
+				name: 'binaryPropertyName',
 				type: 'string',
 				required: true,
 				displayOptions: {
@@ -117,9 +116,9 @@ export class LlamaClassify implements INodeType {
 						resource: ['classify'],
 					},
 				},
-				default: '',
-				placeholder: '/User/user/Desktop/file.pdf',
-				description: 'Path to your file',
+				default: 'data',
+				placeholder: 'data',
+				description: 'Name of the binary property containing the file to classify',
 			},
 		],
 	};
@@ -134,8 +133,10 @@ export class LlamaClassify implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			if (resource === 'classify') {
 				if (operation === 'classify') {
-					// Get file path input
-					const filePath = this.getNodeParameter('filePath', i) as string;
+					// Get binary data input
+					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
@@ -147,8 +148,11 @@ export class LlamaClassify implements INodeType {
 						}[];
 					};
 					const client = new LlamaCloud({ apiKey: apiKey });
+					const file = new File([buffer], binaryData.fileName || 'file', {
+						type: binaryData.mimeType,
+					});
 					const fileObj = await client.files.create({
-						file: fs.createReadStream(filePath),
+						file: file,
 						purpose: 'classify',
 					});
 					const fileId = fileObj.id;

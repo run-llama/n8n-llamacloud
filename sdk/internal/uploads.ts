@@ -1,3 +1,4 @@
+/* eslint-disable @n8n/community-nodes/no-restricted-globals */
 import { type RequestOptions } from './request-options';
 import type { FilePropertyBag, Fetch } from './builtin-types';
 import type { LlamaCloud } from '../client';

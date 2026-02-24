@@ -8,7 +8,6 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import fs from 'fs';
 import LlamaCloud from '../../sdk/index.js';
 
 export class LlamaExtract implements INodeType {
@@ -82,8 +81,8 @@ export class LlamaExtract implements INodeType {
 				description: 'Extraction Agent ID',
 			},
 			{
-				displayName: 'File Path',
-				name: 'filePath',
+				displayName: 'Binary Property',
+				name: 'binaryPropertyName',
 				type: 'string',
 				required: true,
 				displayOptions: {
@@ -92,9 +91,9 @@ export class LlamaExtract implements INodeType {
 						resource: ['extracting'],
 					},
 				},
-				default: '',
-				placeholder: '/User/user/Desktop/file.pdf',
-				description: 'Path to your file',
+				default: 'data',
+				placeholder: 'data',
+				description: 'Name of the binary property containing the file to extract from',
 			},
 		],
 	};
@@ -109,16 +108,21 @@ export class LlamaExtract implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			if (resource === 'extracting') {
 				if (operation === 'extract') {
-					// Get file path input
-					const filePath = this.getNodeParameter('filePath', i) as string;
+					// Get binary data input
+					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+					const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
 
 					const agentId = this.getNodeParameter('agentId', i) as string;
 					const client = new LlamaCloud({ apiKey: apiKey });
+					const file = new File([buffer], binaryData.fileName || 'file', {
+						type: binaryData.mimeType,
+					});
 					const fileObj = await client.files.create({
-						file: fs.createReadStream(filePath),
+						file: file,
 						purpose: 'extract',
 					});
 					const fileId = fileObj.id;

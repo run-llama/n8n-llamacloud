@@ -1,4 +1,5 @@
 // File manually added for polling utilities. See CONTRIBUTING.md for details.
+/* eslint-disable @n8n/community-nodes/no-restricted-globals, no-console */
 
 /**
  * Backoff strategy for polling intervals
