@@ -1,6 +1,6 @@
 # n8n LlamaCloud Nodes
 
-This repository contains custom n8n nodes for integrating with [LlamaCloud](https://cloud.llamaindex.ai/?utm_source=demo&utm_medium=n8n), providing powerful document processing and retrieval capabilities within your n8n workflows.
+This repository contains custom n8n nodes for integrating with [LlamaParse](https://cloud.llamaindex.ai/?utm_source=demo&utm_medium=n8n), providing powerful document processing and retrieval capabilities within your n8n workflows.
 
 ## 🚀 Features
 
