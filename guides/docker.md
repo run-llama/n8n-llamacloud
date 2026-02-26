@@ -12,12 +12,14 @@ docker build . -t n8n-llamacloud
 docker run \
 	-p 5678:5678 \
 	--env GENERIC_TIMEZONE="europe/berlin" \
-	... # other env variables
+	... \ # other env variables
+	n8n-llamacloud
 ```
 
 **With Compose**
 
 ```bash
+curl -L https://raw.githubusercontent.com/run-llama/n8n-llamacloud/master/Dockerfile > Dockerfile
 curl -L https://raw.githubusercontent.com/run-llama/n8n-llamacloud/master/compose.yaml > compose.yaml
 docker compose up
 ```

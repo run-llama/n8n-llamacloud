@@ -59,11 +59,11 @@ Select the 'LlamaExtract' node with the 'Extract data from a file' action.
 
 ![LlamaExtract Pt1](./assets/llamaextract_pt1.png)
 
-When setting up the node, pass your Agent ID (copy it from the LlamaCloud Platform UI or from the outputs of the code snippets), and the path to a file:
+When setting up the node, pass your Agent ID (copy it from the LlamaCloud Platform UI or from the outputs of the code snippets), and the binary data of file:
 
 ![LlamaExtract Pt2](./assets/llamaextract_pt2.png)
 
-As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a n8n form.
+As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a webhook.
 
 ---
 

@@ -4,7 +4,7 @@
 		"module": "NodeNext",
 		"moduleResolution": "nodenext",
 		"target": "es2019",
-		"lib": ["es2019", "es2020", "es2022.error"],
+		"lib": ["es2019", "es2020", "es2022.error", "dom", "dom.iterable"],
 		"removeComments": true,
 		"useUnknownInCatchVariables": false,
 		"forceConsistentCasingInFileNames": true,

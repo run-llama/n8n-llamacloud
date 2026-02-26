@@ -10,6 +10,7 @@ import type {
 import { uuid4 } from './internal/utils/uuid';
 import { validatePositiveInteger, isAbsoluteURL, safeJSON } from './internal/utils/values';
 import { sleep } from './internal/utils/sleep';
+import { setTimeout, clearTimeout } from './internal/utils/timer';
 export type { Logger, LogLevel } from './internal/utils/log';
 import { castToError, isAbortError } from './internal/errors';
 import type { APIResponseProps } from './internal/parse';
@@ -512,7 +513,7 @@ export class LlamaCloud {
 		const response = await this.fetchWithTimeout(url, req, timeout, controller).catch(castToError);
 		const headersTime = Date.now();
 
-		if (response instanceof globalThis.Error) {
+		if (response instanceof Error) {
 			const retryMessage = `retrying, ${retriesRemaining} attempts remaining`;
 			if (options.signal?.aborted) {
 				throw new Errors.APIUserAbortError();
@@ -663,8 +664,8 @@ export class LlamaCloud {
 		const timeout = setTimeout(abort, ms);
 
 		const isReadableBody =
-			((globalThis as any).ReadableStream &&
-				options.body instanceof (globalThis as any).ReadableStream) ||
+			(typeof ReadableStream !== 'undefined' &&
+				options.body instanceof ReadableStream) ||
 			(typeof options.body === 'object' &&
 				options.body !== null &&
 				Symbol.asyncIterator in options.body);
@@ -788,8 +789,8 @@ export class LlamaCloud {
 			method,
 			headers: reqHeaders,
 			...(options.signal && { signal: options.signal }),
-			...((globalThis as any).ReadableStream &&
-				body instanceof (globalThis as any).ReadableStream && { duplex: 'half' }),
+			...(typeof ReadableStream !== 'undefined' &&
+				body instanceof ReadableStream && { duplex: 'half' }),
 			...(body && { body }),
 			...((this.fetchOptions as any) ?? {}),
 			...((options.fetchOptions as any) ?? {}),
@@ -860,13 +861,13 @@ export class LlamaCloud {
 				// Preserve legacy string encoding behavior for now
 				headers.values.has('content-type')) ||
 			// `Blob` is superset of `File`
-			((globalThis as any).Blob && body instanceof (globalThis as any).Blob) ||
+			(typeof Blob !== 'undefined' && body instanceof Blob) ||
 			// `FormData` -> `multipart/form-data`
 			body instanceof FormData ||
 			// `URLSearchParams` -> `application/x-www-form-urlencoded`
 			body instanceof URLSearchParams ||
 			// Send chunked stream (each chunk has own `length`)
-			((globalThis as any).ReadableStream && body instanceof (globalThis as any).ReadableStream)
+			(typeof ReadableStream !== 'undefined' && body instanceof ReadableStream)
 		) {
 			return { bodyHeaders: undefined, body: body as BodyInit };
 		} else if (

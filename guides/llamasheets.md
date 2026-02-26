@@ -6,11 +6,11 @@ Select the 'LlamaSheets' node with the 'Parse an xlsx file' action.
 
 ![LlamaSheets Pt1](./assets/llamasheets_pt1.png)
 
-When setting up the node, simply provide the path to a file:
+When setting up the node, simply provide the binary data of a file:
 
 ![LlamaSheets Pt2](./assets/llamasheets_pt2.png)
 
-As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a n8n form.
+As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a webhook.
 
 ---
 
