@@ -4,17 +4,26 @@ You can setup LlamaParse by choosing the `LlamaParse` node and the `Parse PDF Fi
 
 ![LlamaParse Pt1](./assets/llamaparse_pt1.png)
 
-And, once you selected that, you can specify a file path to parse:
+And, once you selected that, you can specify file binary data to parse:
 
 ![LlamaParse Pt2](./assets/llamaparse_pt2.png)
 
-Or add it dynamically from another source you can use as trigger, such as an n8n Form:
+For binary data, it is best to dynamically fetch them from another source (trigger), such as a WebHook:
 
-![n8n form setup](./assets/llamaparse_form.png)
+![n8n webhook setup](./assets/llamaparse_webhook.png)
 
-And you can employ the form output as input for LlamaParse:
+In this example, you can send a PDF directly with a `curl` request:
 
-![n8n form input](./assets/llamaparse_onform.png)
+```bash
+curl -X POST \
+  -H "Content-Type: application/pdf" \
+  --data-binary @document.pdf \
+  http://localhost:5678/<YOUR_WEBHOOK_NAME>/<YOUR_WEBHOOK_PATH>
+```
+
+And you can take the webhook output as input for LlamaParse:
+
+![n8n form input](./assets/llamaparse_onwebhook.png)
 
 ---
 
