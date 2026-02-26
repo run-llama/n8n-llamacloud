@@ -1,5 +1,3 @@
-// manual implementation of built-in setTimeout/clearTimeout to avoid n8n checks flagging them as external dependencies
-
 class Timer {
 	private timers: Map<number, { callback: () => void; endTime: number; cancelled: boolean }> =
 		new Map();
@@ -42,11 +40,7 @@ class Timer {
 		// Check if cancelled before executing
 		if (!timerData.cancelled) {
 			this.timers.delete(id);
-			try {
-				timerData.callback();
-			} catch (error) {
-				console.error('Timer callback error:', error);
-			}
+			timerData.callback();
 		}
 	}
 
