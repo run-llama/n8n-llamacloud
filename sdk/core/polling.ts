@@ -14,68 +14,68 @@ export type BackoffStrategy = 'constant' | 'linear' | 'exponential';
  * Raised when polling times out before completion.
  */
 export class PollingTimeoutError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'PollingTimeoutError';
-  }
+	constructor(message: string) {
+		super(message);
+		this.name = 'PollingTimeoutError';
+	}
 }
 
 /**
  * Raised when a job fails during polling.
  */
 export class PollingError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'PollingError';
-  }
+	constructor(message: string) {
+		super(message);
+		this.name = 'PollingError';
+	}
 }
 
 /**
  * Calculate the next polling interval based on backoff strategy.
  */
 function calculateNextInterval(
-  currentInterval: number,
-  backoff: BackoffStrategy,
-  maxInterval: number,
+	currentInterval: number,
+	backoff: BackoffStrategy,
+	maxInterval: number,
 ): number {
-  if (backoff === 'constant') {
-    return currentInterval;
-  } else if (backoff === 'linear') {
-    return Math.min(currentInterval + 1.0, maxInterval);
-  } else if (backoff === 'exponential') {
-    return Math.min(currentInterval * 2.0, maxInterval);
-  }
-  return currentInterval;
+	if (backoff === 'constant') {
+		return currentInterval;
+	} else if (backoff === 'linear') {
+		return Math.min(currentInterval + 1.0, maxInterval);
+	} else if (backoff === 'exponential') {
+		return Math.min(currentInterval * 2.0, maxInterval);
+	}
+	return currentInterval;
 }
 
 /**
  * Polling utility options
  */
 export interface PollingOptions {
-  /**
-   * Initial polling interval in seconds (default: 1.0)
-   */
-  pollingInterval?: number | undefined;
+	/**
+	 * Initial polling interval in seconds (default: 1.0)
+	 */
+	pollingInterval?: number | undefined;
 
-  /**
-   * Maximum polling interval for backoff in seconds (default: 5.0)
-   */
-  maxInterval?: number | undefined;
+	/**
+	 * Maximum polling interval for backoff in seconds (default: 5.0)
+	 */
+	maxInterval?: number | undefined;
 
-  /**
-   * Maximum time to wait in seconds (default: 2000.0)
-   */
-  timeout?: number | undefined;
+	/**
+	 * Maximum time to wait in seconds (default: 2000.0)
+	 */
+	timeout?: number | undefined;
 
-  /**
-   * Backoff strategy for polling intervals (default: "linear")
-   */
-  backoff?: BackoffStrategy | undefined;
+	/**
+	 * Backoff strategy for polling intervals (default: "linear")
+	 */
+	backoff?: BackoffStrategy | undefined;
 
-  /**
-   * Print progress indicators every 10 polls (default: false)
-   */
-  verbose?: boolean | undefined;
+	/**
+	 * Print progress indicators every 10 polls (default: false)
+	 */
+	verbose?: boolean | undefined;
 }
 
 export const DEFAULT_TIMEOUT = 7200.0; // 2 hours
@@ -93,46 +93,48 @@ export const DEFAULT_TIMEOUT = 7200.0; // 2 hours
  * @throws {PollingError} If the job fails
  */
 export async function pollUntilComplete<T>(
-  getStatusFn: () => Promise<T>,
-  isCompleteFn: (status: T) => boolean,
-  isErrorFn: (status: T) => boolean,
-  getErrorMessageFn: (status: T) => string,
-  options: PollingOptions = {},
+	getStatusFn: () => Promise<T>,
+	isCompleteFn: (status: T) => boolean,
+	isErrorFn: (status: T) => boolean,
+	getErrorMessageFn: (status: T) => string,
+	options: PollingOptions = {},
 ): Promise<T> {
-  const {
-    pollingInterval = 1.0,
-    maxInterval = 5.0,
-    timeout = DEFAULT_TIMEOUT,
-    backoff = 'linear',
-  } = options;
+	const {
+		pollingInterval = 1.0,
+		maxInterval = 5.0,
+		timeout = DEFAULT_TIMEOUT,
+		backoff = 'linear',
+	} = options;
 
-  const startTime = Date.now();
-  let currentInterval = pollingInterval;
+	const startTime = Date.now();
+	let currentInterval = pollingInterval;
 
-  while (true) {
-    await new Promise((resolve) => setTimeout(resolve, currentInterval * 1000));
+	while (true) {
+		await new Promise<void>((resolve) => setTimeout(resolve, currentInterval * 1000));
 
-    // Get current status
-    const status = await getStatusFn();
+		// Get current status
+		const status = await getStatusFn();
 
-    // Check if complete
-    if (isCompleteFn(status)) {
-      return status;
-    }
+		// Check if complete
+		if (isCompleteFn(status)) {
+			return status;
+		}
 
-    // Check if error
-    if (isErrorFn(status)) {
-      const errorMsg = getErrorMessageFn(status);
-      throw new PollingError(errorMsg);
-    }
+		// Check if error
+		if (isErrorFn(status)) {
+			const errorMsg = getErrorMessageFn(status);
+			throw new PollingError(errorMsg);
+		}
 
-    // Check timeout
-    const elapsed = (Date.now() - startTime) / 1000;
-    if (elapsed > timeout) {
-      throw new PollingTimeoutError(`Polling timed out after ${elapsed.toFixed(1)}s (timeout: ${timeout}s)`);
-    }
+		// Check timeout
+		const elapsed = (Date.now() - startTime) / 1000;
+		if (elapsed > timeout) {
+			throw new PollingTimeoutError(
+				`Polling timed out after ${elapsed.toFixed(1)}s (timeout: ${timeout}s)`,
+			);
+		}
 
-    // Calculate next interval
-    currentInterval = calculateNextInterval(currentInterval, backoff, maxInterval);
-  }
+		// Calculate next interval
+		currentInterval = calculateNextInterval(currentInterval, backoff, maxInterval);
+	}
 }
