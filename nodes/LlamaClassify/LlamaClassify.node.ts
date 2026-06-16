@@ -7,8 +7,12 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import LlamaCloud from '../../sdk/index.js';
-import { ClassifierRule } from '../../sdk/resources/classifier.js';
+import { getJSON, postJSON, pollUntil, uploadFile } from '../LlamaParse/utils.js';
+
+interface ClassifyRule {
+	type: string;
+	description: string;
+}
 
 export class LlamaClassify implements INodeType {
 	description: INodeTypeDescription = {
@@ -19,7 +23,7 @@ export class LlamaClassify implements INodeType {
 		version: 1,
 		description: 'Classify files based on specific rules.',
 		defaults: {
-			name: 'LlamaExtract',
+			name: 'LlamaClassify',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
@@ -27,6 +31,7 @@ export class LlamaClassify implements INodeType {
 			{
 				name: 'llamaCloudApi',
 				required: true,
+				displayName: 'LlamaCloud API Credentials',
 			},
 		],
 		properties: [
@@ -140,6 +145,8 @@ export class LlamaClassify implements INodeType {
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
+					const baseUrl =
+						(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
 
 					const rules = this.getNodeParameter('rulesUi', i) as {
 						rules: {
@@ -147,33 +154,56 @@ export class LlamaClassify implements INodeType {
 							description: string;
 						}[];
 					};
-					const client = new LlamaCloud({ apiKey: apiKey });
-					const file = new File([buffer], binaryData.fileName || 'file', {
-						type: binaryData.mimeType,
-					});
-					const fileObj = await client.files.create({
-						file: file,
-						purpose: 'classify',
-					});
-					const fileId = fileObj.id;
-					const classifyRules: ClassifierRule[] = [];
-					for (const rule of rules.rules) {
-						const classifierRule = {
-							type: rule.category,
-							description: rule.description,
-						} as ClassifierRule;
-						classifyRules.push(classifierRule);
+					const http = { apiKey, baseUrl };
+
+					let fileId: string;
+					try {
+						fileId = await uploadFile(http, {
+							buffer,
+							mimeType: binaryData.mimeType,
+							fileName: binaryData.fileName,
+							fileExtension: binaryData.fileExtension,
+						});
+					} catch (e: any) {
+						console.error('LlamaClassify upload failed', e);
+						throw new ApplicationError(`Could not upload the file: ${e?.message ?? e}`);
 					}
-					const result = await client.classifier.classify({
-						rules: classifyRules,
-						file_ids: [fileId],
-					});
-					const class_res = result.items[0];
-					if (class_res.result) {
+
+					const classifyRules: ClassifyRule[] = rules.rules.map((rule) => ({
+						type: rule.category,
+						description: rule.description,
+					}));
+
+					// 1) Create classify job.
+					let jobId: string;
+					try {
+						const job = await postJSON<{ id: string }>(http, '/api/v2/classify', {
+							file_input: fileId,
+							configuration: { rules: classifyRules },
+						});
+						jobId = job.id;
+					} catch (e: any) {
+						console.error('LlamaClassify create-job failed', e);
+						throw new ApplicationError(`Could not create classify job: ${e?.message ?? e}`);
+					}
+
+					// 2) Poll until complete.
+					const result = await pollUntil<any>(
+						() => getJSON(http, `/api/v2/classify/${jobId}`),
+						(r) => {
+							console.log('Classify status', r?.status);
+							return r?.status === 'COMPLETED';
+						},
+						(r) => r?.status === 'FAILED',
+						(r) => `Classify job ${jobId} ${r?.status}: ${r?.error_message ?? 'unknown error'}`,
+						{ label: `Classify job ${jobId}` },
+					);
+
+					if (result.result) {
 						const obj = {
-							category: class_res.result.type,
-							reasons: class_res.result.reasoning,
-							confidence: class_res.result.confidence,
+							category: result.result.type ?? 'unclassified',
+							reasons: result.result.reasoning,
+							confidence: result.result.confidence,
 						};
 						returnData.push(obj);
 					} else {

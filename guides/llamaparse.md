@@ -4,7 +4,7 @@ You can setup LlamaParse by choosing the `LlamaParse` node and the `Parse PDF Fi
 
 ![LlamaParse Pt1](./assets/llamaparse_pt1.png)
 
-And, once you selected that, you can specify file binary data to parse:
+And, once you selected that, you can specify file binary data to parse, as well as parsing tier and version:
 
 ![LlamaParse Pt2](./assets/llamaparse_pt2.png)
 
@@ -29,7 +29,8 @@ And you can take the webhook output as input for LlamaParse:
 
 ### View Also:
 
-- [LlamaCloud Index setup](./llamacloud_index.md)
+- [LlamaCloud Index v1 n8n setup](./llamacloud_index.md)
+- [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
 - [LlamaExtract Setup](./llamaextract.md)
 - [LlamaClassify n8n setup](./llamaclassify.md)
 - [LlamaSheets n8n setup](./llamasheets.md)

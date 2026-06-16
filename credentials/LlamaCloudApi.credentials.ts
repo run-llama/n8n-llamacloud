@@ -7,8 +7,8 @@ import {
 
 export class LlamaCloudApi implements ICredentialType {
 	name = 'llamaCloudApi';
-	displayName = 'LlamaCloud API Key API';
-	documentationUrl = 'https://cloud.docs.llamaindex.ai/llamacloud/';
+	displayName = 'LlamaCloud API';
+	documentationUrl = 'https://developers.llamaindex.ai/llamaparse/general/api_key/';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
@@ -16,6 +16,12 @@ export class LlamaCloudApi implements ICredentialType {
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
+		},
+		{
+			displayName: 'Base API URL',
+			name: 'baseURL',
+			type: 'string',
+			default: 'https://api.cloud.llamaindex.ai',
 		},
 	];
 
@@ -31,7 +37,7 @@ export class LlamaCloudApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.cloud.llamaindex.ai/api/v1/projects',
+			url: '={{$credentials.baseURL}}/api/v1/projects',
 		},
 	};
 }

@@ -1,0 +1,36 @@
+{
+	"name": "LlamaCloudIndexV2",
+	"displayName": "LlamaCloud Index v2",
+	"group": ["action"],
+	"version": 1,
+	"description": "Retrieve context from your LlamaCloud Index (V2)",
+	"defaults": {
+		"name": "LlamaCloudIndexV2"
+	},
+	"inputs": ["main"],
+	"outputs": ["main"],
+	"credentials": [
+		{
+			"name": "LlamaCloudApi",
+			"required": true
+		}
+	],
+	"properties": [
+		{
+			"displayName": "Index ID",
+			"name": "indexId",
+			"type": "string",
+			"default": "",
+			"required": true,
+			"description": "Your LlamaCloud Index ID (v2)"
+		},
+		{
+			"displayName": "Top K",
+			"name": "topK",
+			"type": "number",
+			"default": 5,
+			"placeholder": "5",
+			"description": "Your LlamaCloud Index ID (v2)"
+		}
+	]
+}

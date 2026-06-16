@@ -8,20 +8,20 @@ import {
 
 import { postJSON } from '../LlamaParse/utils.js';
 
-interface PipelineRetrieveResponse {
-	retrieval_nodes: Array<{ node: { text?: string | null } }>;
+interface RetrievalRetrieveResponse {
+	results: Array<{ content: string }>;
 }
 
-export class LlamaCloud implements INodeType {
+export class LlamaCloudIndexV2 implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'LlamaCloud',
-		name: 'llamaCloud',
+		displayName: 'LlamaCloud Index (New)',
+		name: 'llamaCloudIndexNew',
 		icon: 'file:llamacloud.svg',
 		group: ['action'],
 		version: 1,
 		description: 'Retrieve context from your LlamaCloud Index',
 		defaults: {
-			name: 'LlamaCloud',
+			name: 'LlamaCloudIndexV2',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
@@ -40,7 +40,15 @@ export class LlamaCloud implements INodeType {
 				required: true,
 				default: '',
 				placeholder: '',
-				description: 'Your LlamaCloud Index ID',
+				description: 'Your LlamaCloud Index ID (v2)',
+			},
+			{
+				displayName: 'Top K',
+				name: 'topK',
+				type: 'number',
+				default: 5,
+				placeholder: '5',
+				description: 'Your LlamaCloud Index ID (v2)',
 			},
 		],
 	};
@@ -50,20 +58,20 @@ export class LlamaCloud implements INodeType {
 		const credentials = await this.getCredentials('llamaCloudApi');
 		const apiKey = credentials.apiKey as string;
 		const baseUrl = (credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
-		const pipelineId = this.getNodeParameter('indexId', 0) as string;
+		const indexId = this.getNodeParameter('indexId', 0) as string;
+		let topK = this.getNodeParameter('topK', 0) as unknown;
+		topK = parseInt(topK as string);
 		const items = this.getInputData();
 		const chatMessage = typeof items[0].json.chatInput === 'string' ? items[0].json.chatInput : '';
-		const result = await postJSON<PipelineRetrieveResponse>(
+		const result = await postJSON<RetrievalRetrieveResponse>(
 			{ apiKey, baseUrl },
-			`/api/v1/pipelines/${pipelineId}/retrieve`,
-			{ dense_similarity_top_k: 5, query: chatMessage },
+			'/api/v1/retrieval/retrieve',
+			{ index_id: indexId, query: chatMessage, top_k: topK as number },
 		);
 
 		const contextTexts: string[] = [];
-		for (const node of result.retrieval_nodes) {
-			if (node.node.text) {
-				contextTexts.push(node.node.text);
-			}
+		for (const node of result.results) {
+			contextTexts.push(node.content);
 		}
 
 		return [[{ json: { context: contextTexts } }]];
