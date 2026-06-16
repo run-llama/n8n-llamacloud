@@ -1,6 +1,6 @@
 {
 	"name": "@llamaindex/n8n-nodes-llamacloud",
-	"version": "5.0.1",
+	"version": "5.0.2",
 	"description": "LlamaCloud integration with n8n",
 	"license": "MIT",
 	"homepage": "https://run-llama.github.io/n8n-llamacloud/",
