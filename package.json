@@ -1,6 +1,6 @@
 {
 	"name": "@llamaindex/n8n-nodes-llamacloud",
-	"version": "5.0.1",
+	"version": "5.0.2",
 	"description": "LlamaCloud integration with n8n",
 	"license": "MIT",
 	"homepage": "https://run-llama.github.io/n8n-llamacloud/",
@@ -36,7 +36,9 @@
 			"dist/nodes/LlamaParse/LlamaParse.node.js",
 			"dist/nodes/LlamaExtract/LlamaExtract.node.js",
 			"dist/nodes/LlamaCloud/LlamaCloud.node.js",
-			"dist/nodes/LlamaClassify/LlamaClassify.node.js"
+			"dist/nodes/LlamaClassify/LlamaClassify.node.js",
+			"dist/nodes/LlamaCloudIndexNew/LlamaCloudIndexNew.node.js",
+			"dist/nodes/LlamaSheets/LlamaSheets.node.js"
 		]
 	},
 	"devDependencies": {
