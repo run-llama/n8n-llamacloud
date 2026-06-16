@@ -155,7 +155,7 @@ export async function uploadFile(opts: LlamaHttpOptions, input: BinaryFileInput)
 }
 
 /** POST JSON and return the parsed JSON response. */
-export async function postJSON<T = any>(
+export async function postJSON<T = unknown>(
 	opts: LlamaHttpOptions,
 	path: string,
 	body: unknown,
@@ -173,7 +173,7 @@ export async function postJSON<T = any>(
 }
 
 /** GET JSON and return the parsed response. `query` is appended as ?k=v&... */
-export async function getJSON<T = any>(
+export async function getJSON<T = unknown>(
 	opts: LlamaHttpOptions,
 	path: string,
 	query?: Record<string, string | number | boolean | string[] | undefined>,
@@ -227,4 +227,10 @@ export async function pollUntil<T>(
 		await new Promise<void>((r) => setTimeout(() => r(), intervalMs));
 		intervalMs = Math.min(intervalMs * 1.5, maxIntervalMs);
 	}
+}
+
+/* Get the error message from an unknown error */
+export function errorMessage(e: unknown): string {
+	if (e instanceof Error) return e.message;
+	return String(e);
 }
