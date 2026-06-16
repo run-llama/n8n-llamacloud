@@ -7,7 +7,7 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import LlamaCloud from '../../sdk/index.js';
+import { getJSON, postJSON, pollUntil, uploadFile } from './utils.js';
 
 export class LlamaParse implements INodeType {
 	description: INodeTypeDescription = {
@@ -26,6 +26,7 @@ export class LlamaParse implements INodeType {
 			{
 				name: 'llamaCloudApi',
 				required: true,
+				displayName: 'LlamaCloud API Credentials',
 			},
 		],
 		properties: [
@@ -65,6 +66,51 @@ export class LlamaParse implements INodeType {
 				noDataExpression: true,
 			},
 			{
+				displayName: 'Tier',
+				name: 'tier',
+				type: 'options',
+				displayOptions: {
+					show: {
+						operation: ['parse'],
+						resource: ['parsing'],
+					},
+				},
+				options: [
+					{
+						name: 'Fast',
+						value: 'fast',
+					},
+					{
+						name: 'Cost Effective',
+						value: 'cost_effective',
+					},
+					{
+						name: 'Agentic',
+						value: 'agentic',
+					},
+					{
+						name: 'Agentic Plus',
+						value: 'agentic_plus',
+					},
+				],
+				default: 'fast',
+				description: 'Parsing tier',
+			},
+			{
+				displayName: 'Version',
+				name: 'version',
+				type: 'string',
+				displayOptions: {
+					show: {
+						operation: ['parse'],
+						resource: ['parsing'],
+					},
+				},
+				default: 'latest',
+				placeholder: 'latest',
+				description: 'Version of the Parse service to use for the parsing job',
+			},
+			{
 				displayName: 'Binary Property',
 				name: 'binaryPropertyName',
 				type: 'string',
@@ -99,25 +145,65 @@ export class LlamaParse implements INodeType {
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
-					const client = new LlamaCloud({ apiKey: apiKey });
-					const file = new File([buffer], binaryData.fileName || 'file', {
-						type: binaryData.mimeType,
-					});
-					const fileObj = await client.files.create({
-						file: file,
-						purpose: 'parse',
-					});
-					const fileId = fileObj.id;
-					const parsed = await client.parsing.parse({
-						file_id: fileId,
-						tier: 'fast',
-						version: 'latest',
-						expand: ['text', 'items'],
-					});
-					if (parsed.text) {
-						for (const page of parsed.text.pages) {
-							returnData.push({ text: page.text });
-						}
+					const baseUrl =
+						(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
+					console.log('Base URL', baseUrl);
+					const tier = this.getNodeParameter('tier', i) as
+						| 'fast'
+						| 'cost_effective'
+						| 'agentic'
+						| 'agentic_plus';
+					const version = this.getNodeParameter('version', i) as string;
+
+					const http = { apiKey, baseUrl };
+
+					let fileId: string;
+					try {
+						fileId = await uploadFile(http, {
+							buffer,
+							mimeType: binaryData.mimeType,
+							fileName: binaryData.fileName,
+							fileExtension: binaryData.fileExtension,
+						});
+					} catch (e: any) {
+						console.error('LlamaParse upload failed', e);
+						throw new ApplicationError(`Could not upload the file: ${e?.message ?? e}`);
+					}
+
+					const expand: string[] = tier === 'fast' ? ['text_full'] : ['text_full', 'markdown_full'];
+
+					// 1) Create the parse job (POST /api/v2/parse).
+					let jobId: string;
+					try {
+						const job = await postJSON<{ id: string }>(http, '/api/v2/parse', {
+							file_id: fileId,
+							tier,
+							version,
+						});
+						jobId = job.id;
+					} catch (e: any) {
+						console.error('LlamaParse create-job failed', e);
+						throw new ApplicationError(`Could not create parse job: ${e?.message ?? e}`);
+					}
+
+					// 2) Poll GET /api/v2/parse/{job_id} until terminal status.
+					const parsed = await pollUntil<any>(
+						() => getJSON(http, `/api/v2/parse/${jobId}`, { expand }),
+						(r) => {
+							console.log('Parse status', r?.job?.status);
+							return r?.job?.status === 'COMPLETED';
+						},
+						(r) => r?.job?.status === 'FAILED' || r?.job?.status === 'CANCELLED',
+						(r) =>
+							`Parse job ${jobId} ${r?.job?.status}: ${r?.job?.error_message ?? 'unknown error'}`,
+						{ label: `Parse job ${jobId}` },
+					);
+					console.log('Parsed');
+
+					if (parsed.markdown_full) {
+						returnData.push({ text: parsed.markdown_full });
+					} else if (parsed.text_full) {
+						returnData.push({ text: parsed.text_full });
 					} else {
 						throw new ApplicationError('Could not parse the file');
 					}

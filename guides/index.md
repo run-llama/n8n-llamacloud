@@ -31,7 +31,7 @@ On n8n's dashboard, select "Create Credentials" and then select "LlamaCloud API 
 
 ![Credentials - Pt1](./assets/credentials_pt1.png)
 
-Paste your API key and save:
+Paste your API key and, optionally, specify a base URL for the API, and save:
 
 ![Credentials - Pt2](./assets/credentials_pt2.png)
 

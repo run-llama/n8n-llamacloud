@@ -31,7 +31,10 @@
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint nodes credentials package.json",
 		"lintfix": "eslint nodes credentials package.json --fix",
-		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json",
+		"changeset": "changeset",
+		"version": "changeset version",
+		"release": "changeset publish"
 	},
 	"files": [
 		"dist"
@@ -49,6 +52,7 @@
 		]
 	},
 	"devDependencies": {
+		"@changesets/cli": "^2.31.0",
 		"@types/node": "^25.3.0",
 		"@typescript-eslint/parser": "~8.32.0",
 		"eslint": "^8.57.0",

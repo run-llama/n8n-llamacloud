@@ -7,7 +7,7 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow/dist/index.js';
 
-import LlamaCloud from '../../sdk/index.js';
+import { getJSON, postJSON, pollUntil, uploadFile } from '../LlamaParse/utils.js';
 
 export class LlamaSheets implements INodeType {
 	description: INodeTypeDescription = {
@@ -26,6 +26,7 @@ export class LlamaSheets implements INodeType {
 			{
 				name: 'llamaCloudApi',
 				required: true,
+				displayName: 'LlamaCloud API Credentials',
 			},
 		],
 		properties: [
@@ -99,49 +100,74 @@ export class LlamaSheets implements INodeType {
 					// Get additional fields input
 					const credentials = await this.getCredentials('llamaCloudApi');
 					const apiKey = credentials.apiKey as string;
-					const client = new LlamaCloud({ apiKey: apiKey });
-					const file = new File([buffer], binaryData.fileName || 'file', {
-						type: binaryData.mimeType,
-					});
-					const fileObj = await client.files.create({
-						file: file,
-						purpose: 'sheet',
-					});
-					const fileId = fileObj.id;
-					const parsed = await client.beta.sheets.parse({
-						file_id: fileId,
-						config: {
-							generate_additional_metadata: true,
+					const baseUrl =
+						(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
+					const http = { apiKey, baseUrl };
+
+					let fileId: string;
+					try {
+						fileId = await uploadFile(http, {
+							buffer,
+							mimeType: binaryData.mimeType,
+							fileName: binaryData.fileName,
+							fileExtension: binaryData.fileExtension,
+						});
+					} catch (e: any) {
+						console.error('LlamaSheets upload failed', e);
+						throw new ApplicationError(`Could not upload the file: ${e?.message ?? e}`);
+					}
+
+					// 1) Create sheets parsing job.
+					let jobId: string;
+					try {
+						const job = await postJSON<{ id: string }>(http, '/api/v1/beta/sheets/jobs', {
+							file_id: fileId,
+							config: { generate_additional_metadata: true },
+						});
+						jobId = job.id;
+					} catch (e: any) {
+						console.error('LlamaSheets create-job failed', e);
+						throw new ApplicationError(`Could not create sheets job: ${e?.message ?? e}`);
+					}
+
+					// 2) Poll until complete. Terminal success: SUCCESS / PARTIAL_SUCCESS.
+					const parsed = await pollUntil<any>(
+						() => getJSON(http, `/api/v1/beta/sheets/jobs/${jobId}`, { include_results: true }),
+						(r) => {
+							console.log('Sheets status', r?.status);
+							return r?.status === 'SUCCESS' || r?.status === 'PARTIAL_SUCCESS';
 						},
-					});
-					if (parsed.success) {
-						if (parsed.regions) {
-							for (const region of parsed.regions) {
-								const regionTitle = region.title ? region.title : '';
-								const regionDescription = region.description ? region.description : '';
-								const regionId = region.region_id ? region.region_id : null;
-								let regionUrl: string | null = null;
-								if (regionId) {
-									const parquetUrl = await client.beta.sheets.getResultTable('table', {
-										region_id: regionId,
-										spreadsheet_job_id: parsed.id,
-										expires_at_seconds: 3600,
-									});
-									regionUrl = parquetUrl.url;
-								}
-								const obj = {
-									regionTitle: regionTitle,
-									regionDescription: regionDescription,
-									parquetUrl: regionUrl,
-									secondsToExpire: 3600,
-								};
-								returnData.push(obj);
-							}
-						} else {
-							throw new ApplicationError('Could not parse the excel sheet');
-						}
-					} else {
+						(r) => r?.status === 'ERROR' || r?.status === 'CANCELLED',
+						(r) => {
+							const errs =
+								Array.isArray(r?.errors) && r.errors.length ? `: ${r.errors.join(', ')}` : '';
+							return `Sheets job ${jobId} ${r?.status}${errs}`;
+						},
+						{ label: `Sheets job ${jobId}` },
+					);
+
+					if (!parsed.regions || parsed.regions.length === 0) {
 						throw new ApplicationError('Could not parse the excel sheet');
+					}
+					for (const region of parsed.regions) {
+						const regionTitle = region.title ? region.title : '';
+						const regionDescription = region.description ? region.description : '';
+						const regionId = region.region_id ? region.region_id : null;
+						let regionUrl: string | null = null;
+						if (regionId) {
+							const presigned = await getJSON<{ url: string }>(
+								http,
+								`/api/v1/beta/sheets/jobs/${parsed.id}/regions/${regionId}/result/table`,
+								{ expires_at_seconds: 3600 },
+							);
+							regionUrl = presigned.url;
+						}
+						returnData.push({
+							regionTitle,
+							regionDescription,
+							parquetUrl: regionUrl,
+							secondsToExpire: 3600,
+						});
 					}
 				}
 			}

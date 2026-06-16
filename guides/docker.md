@@ -31,7 +31,8 @@ In both cases, you should be able to see the n8n instance up and running at http
 ### View Also:
 
 - [LlamaParse n8n setup](./llamaparse.md)
-- [LlamaCloud Index setup](./llamacloud_index.md)
+- [LlamaCloud Index v1 n8n setup](./llamacloud_index.md)
+- [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
 - [LlamaExtract Setup](./llamaextract.md)
 - [LlamaClassify n8n setup](./llamaclassify.md)
 - [LlamaSheets n8n setup](./llamasheets.md)
