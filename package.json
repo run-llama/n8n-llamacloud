@@ -36,7 +36,9 @@
 			"dist/nodes/LlamaParse/LlamaParse.node.js",
 			"dist/nodes/LlamaExtract/LlamaExtract.node.js",
 			"dist/nodes/LlamaCloud/LlamaCloud.node.js",
-			"dist/nodes/LlamaClassify/LlamaClassify.node.js"
+			"dist/nodes/LlamaClassify/LlamaClassify.node.js",
+			"dist/nodes/LlamaCloudIndexNew/LlamaCloudIndexNew.node.js",
+			"dist/nodes/LlamaSheets/LlamaSheets.node.js"
 		]
 	},
 	"devDependencies": {

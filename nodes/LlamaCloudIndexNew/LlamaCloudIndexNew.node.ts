@@ -13,7 +13,7 @@ interface RetrievalRetrieveResponse {
 	results: Array<{ content: string }>;
 }
 
-export class LlamaCloudIndexV2 implements INodeType {
+export class LlamaCloudIndexNew implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LlamaCloud Index (New)',
 		subtitle: 'Retrieve context from a knowledge base',
@@ -23,7 +23,7 @@ export class LlamaCloudIndexV2 implements INodeType {
 		version: 1,
 		description: 'Retrieve context from your LlamaCloud Index',
 		defaults: {
-			name: 'LlamaCloudIndexV2',
+			name: 'LlamaCloudIndexNew',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
