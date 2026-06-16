@@ -1,5 +1,6 @@
 import {
 	IAuthenticateGeneric,
+	Icon,
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
@@ -8,6 +9,7 @@ import {
 export class LlamaCloudApi implements ICredentialType {
 	name = 'llamaCloudApi';
 	displayName = 'LlamaCloud API';
+	icon: Icon = 'file:llamacloud.svg';
 	documentationUrl = 'https://developers.llamaindex.ai/llamaparse/general/api_key/';
 	properties: INodeProperties[] = [
 		{
