@@ -23,6 +23,11 @@
 		"outDir": "./dist/",
 		"allowJs": true,
 	},
-	"include": ["credentials/**/*", "nodes/**/*", "nodes/**/*.json", "sdk/**/*", "package.json"],
+	"include": [
+		"credentials/**/*",
+		"nodes/LlamaParsePlatform/**/*.ts",
+		"nodes/LlamaParsePlatform/**/*.json",
+		"package.json",
+	],
 	"exclude": ["node_modules", "dist"],
 }

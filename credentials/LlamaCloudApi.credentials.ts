@@ -9,7 +9,7 @@ import {
 export class LlamaCloudApi implements ICredentialType {
 	name = 'llamaCloudApi';
 	displayName = 'LlamaCloud API';
-	icon: Icon = 'file:llamacloud.svg';
+	icon: Icon = { light: 'file:./llamaindex_white.svg', dark: 'file:./llamaindex_dark.svg' };
 	documentationUrl = 'https://developers.llamaindex.ai/llamaparse/general/api_key/';
 	properties: INodeProperties[] = [
 		{
