@@ -138,9 +138,9 @@ export class LlamaParsePlatform implements INodeType {
 								fileExtension: binaryData.fileExtension,
 							});
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not upload the file: ${errorMessage(e)}`,
+								{ message: `Could not upload the file: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -158,9 +158,9 @@ export class LlamaParsePlatform implements INodeType {
 							});
 							jobId = job.id;
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not create parse job: ${errorMessage(e)}`,
+								{ message: `Could not create parse job: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -188,11 +188,13 @@ export class LlamaParsePlatform implements INodeType {
 								pairedItem: { item: i },
 							});
 						} else {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(this.getNode(), 'Could not parse the file', {
 								itemIndex: i,
 							});
 						}
 					} else {
+						// this is a non-HTTP related failure, hence the NodeOperationError
 						throw new NodeOperationError(
 							this.getNode(),
 							`Operation ${operation} not supported for resource ${resource}`,
@@ -228,9 +230,9 @@ export class LlamaParsePlatform implements INodeType {
 								fileExtension: binaryData.fileExtension,
 							});
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not upload the file: ${errorMessage(e)}`,
+								{ message: `Could not upload the file: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -249,9 +251,9 @@ export class LlamaParsePlatform implements INodeType {
 							});
 							jobId = job.id;
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not create classify job: ${errorMessage(e)}`,
+								{ message: `Could not create classify job: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -277,6 +279,7 @@ export class LlamaParsePlatform implements INodeType {
 								pairedItem: { item: i },
 							});
 						} else {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(
 								this.getNode(),
 								'Could not produce a classification for the file',
@@ -284,6 +287,7 @@ export class LlamaParsePlatform implements INodeType {
 							);
 						}
 					} else {
+						// this is a non-HTTP related failure, hence the NodeOperationError
 						throw new NodeOperationError(
 							this.getNode(),
 							`Operation ${operation} not supported for resource ${resource}`,
@@ -314,9 +318,9 @@ export class LlamaParsePlatform implements INodeType {
 								fileExtension: binaryData.fileExtension,
 							});
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not upload the file: ${errorMessage(e)}`,
+								{ message: `Could not upload the file: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -330,9 +334,9 @@ export class LlamaParsePlatform implements INodeType {
 							});
 							jobId = job.id;
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not create extract job: ${errorMessage(e)}`,
+								{ message: `Could not create extract job: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -353,11 +357,13 @@ export class LlamaParsePlatform implements INodeType {
 							const obj: IDataObject = { result: stringified };
 							returnData.push({ json: obj, pairedItem: { item: i } });
 						} else {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(this.getNode(), 'Could not extract data', {
 								itemIndex: i,
 							});
 						}
 					} else {
+						// this is a non-HTTP related failure, hence the NodeOperationError
 						throw new NodeOperationError(
 							this.getNode(),
 							`Operation ${operation} not supported for resource ${resource}`,
@@ -379,11 +385,13 @@ export class LlamaParsePlatform implements INodeType {
 						const topK = Number.parseInt(String(topKRaw), 10) || 5;
 
 						if (!indexId) {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(this.getNode(), 'Index ID is required', {
 								itemIndex: i,
 							});
 						}
 						if (!query) {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(
 								this.getNode(),
 								'Query is required (defaults to {{ $json.chatInput }})',
@@ -426,6 +434,7 @@ export class LlamaParsePlatform implements INodeType {
 							pairedItem: { item: i },
 						});
 					} else {
+						// this is a non-HTTP related failure, hence the NodeOperationError
 						throw new NodeOperationError(
 							this.getNode(),
 							`Operation ${operation} not supported for resource ${resource}`,
@@ -453,6 +462,7 @@ export class LlamaParsePlatform implements INodeType {
 							...(c.description ? { description: c.description } : {}),
 						}));
 						if (categories.length === 0) {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(
 								this.getNode(),
 								'At least one Category is required to split a document',
@@ -474,9 +484,9 @@ export class LlamaParsePlatform implements INodeType {
 								fileExtension: binaryData.fileExtension,
 							});
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not upload the file: ${errorMessage(e)}`,
+								{ message: `Could not upload the file: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -493,9 +503,9 @@ export class LlamaParsePlatform implements INodeType {
 							});
 							jobId = job.id;
 						} catch (e) {
-							throw new NodeOperationError(
+							throw new NodeApiError(
 								this.getNode(),
-								`Could not create split job: ${errorMessage(e)}`,
+								{ message: `Could not create split job: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
@@ -512,6 +522,7 @@ export class LlamaParsePlatform implements INodeType {
 
 						const segments = result.result?.segments ?? [];
 						if (segments.length === 0) {
+							// this is a non-HTTP related failure, hence the NodeOperationError
 							throw new NodeOperationError(
 								this.getNode(),
 								'Split job completed but produced no segments',
@@ -529,6 +540,7 @@ export class LlamaParsePlatform implements INodeType {
 							});
 						}
 					} else {
+						// this is a non-HTTP related failure, hence the NodeOperationError
 						throw new NodeOperationError(
 							this.getNode(),
 							`Operation ${operation} not supported for resource ${resource}`,
@@ -536,6 +548,7 @@ export class LlamaParsePlatform implements INodeType {
 						);
 					}
 				} else {
+					// this is a non-HTTP related failure, hence the NodeOperationError
 					throw new NodeOperationError(
 						this.getNode(),
 						`Resource ${resource} not supported for this node`,
