@@ -14,6 +14,7 @@ import {
 	classifyProperties,
 	extractProperties,
 	parseProperties,
+	retrieveProperties,
 	splitProperties,
 } from './resources/index.js';
 import type {
@@ -34,7 +35,7 @@ export class LlamaParsePlatform implements INodeType {
 		group: ['transform'],
 		version: 1,
 		description:
-			'Parse, classify, split, and extract structured data from documents using LlamaCloud',
+			'Parse, classify, split, extract structured data, and retrieve context from documents and indexes using the LlamaParse Platform',
 		defaults: {
 			name: 'LlamaParse Platform',
 		},
@@ -42,9 +43,9 @@ export class LlamaParsePlatform implements INodeType {
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
-				name: 'llamaCloudApi',
+				name: 'llamaParseApi',
 				required: true,
-				displayName: 'LlamaCloud API Credentials',
+				displayName: 'LlamaParse API Credentials',
 			},
 		],
 		properties: [
@@ -66,6 +67,10 @@ export class LlamaParsePlatform implements INodeType {
 						value: 'parsing',
 					},
 					{
+						name: 'Retrieve',
+						value: 'retrieval',
+					},
+					{
 						name: 'Split',
 						value: 'splitting',
 					},
@@ -78,6 +83,7 @@ export class LlamaParsePlatform implements INodeType {
 			...parseProperties,
 			...classifyProperties,
 			...extractProperties,
+			...retrieveProperties,
 			...splitProperties,
 		],
 		usableAsTool: true,
@@ -90,11 +96,14 @@ export class LlamaParsePlatform implements INodeType {
 			| 'parsing'
 			| 'classifying'
 			| 'extracting'
+			| 'retrieval'
 			| 'splitting';
 		const operation = this.getNodeParameter('operation', 0) as
 			| 'parse'
 			| 'classify'
 			| 'extract'
+			| 'retrieveIndex'
+			| 'retrievePipeline'
 			| 'split';
 
 		// For each item, make an API call to create a contact
@@ -107,7 +116,7 @@ export class LlamaParsePlatform implements INodeType {
 						const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 						// Get additional fields input
-						const credentials = await this.getCredentials('llamaCloudApi');
+						const credentials = await this.getCredentials('llamaParseApi');
 						const apiKey = credentials.apiKey as string;
 						const baseUrl =
 							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
@@ -197,7 +206,7 @@ export class LlamaParsePlatform implements INodeType {
 						const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 						// Get additional fields input
-						const credentials = await this.getCredentials('llamaCloudApi');
+						const credentials = await this.getCredentials('llamaParseApi');
 						const apiKey = credentials.apiKey as string;
 						const baseUrl =
 							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
@@ -288,7 +297,7 @@ export class LlamaParsePlatform implements INodeType {
 						const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 						// Get additional fields input
-						const credentials = await this.getCredentials('llamaCloudApi');
+						const credentials = await this.getCredentials('llamaParseApi');
 						const apiKey = credentials.apiKey as string;
 						const baseUrl =
 							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
@@ -355,6 +364,74 @@ export class LlamaParsePlatform implements INodeType {
 							{ itemIndex: i },
 						);
 					}
+				} else if (resource === 'retrieval') {
+					if (operation === 'retrieveIndex' || operation === 'retrievePipeline') {
+						const credentials = await this.getCredentials('llamaParseApi');
+						const apiKey = credentials.apiKey as string;
+						const baseUrl =
+							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
+						const http = { apiKey, baseUrl };
+
+						const indexId = this.getNodeParameter('indexId', i) as string;
+						const queryRaw = this.getNodeParameter('query', i, '') as unknown;
+						const query = typeof queryRaw === 'string' ? queryRaw : String(queryRaw ?? '');
+						const topKRaw = this.getNodeParameter('topK', i, 5) as unknown;
+						const topK = Number.parseInt(String(topKRaw), 10) || 5;
+
+						if (!indexId) {
+							throw new NodeOperationError(this.getNode(), 'Index ID is required', {
+								itemIndex: i,
+							});
+						}
+						if (!query) {
+							throw new NodeOperationError(
+								this.getNode(),
+								'Query is required (defaults to {{ $json.chatInput }})',
+								{ itemIndex: i },
+							);
+						}
+
+						const contextTexts: string[] = [];
+						try {
+							if (operation === 'retrievePipeline') {
+								const result = await postJSON<{
+									retrieval_nodes: Array<{ node: { text?: string | null } }>;
+								}>(http, `/api/v1/pipelines/${indexId}/retrieve`, {
+									dense_similarity_top_k: topK,
+									query,
+								});
+								for (const node of result.retrieval_nodes ?? []) {
+									if (node?.node?.text) contextTexts.push(node.node.text);
+								}
+							} else {
+								const result = await postJSON<{ results: Array<{ content: string }> }>(
+									http,
+									'/api/v1/retrieval/retrieve',
+									{ index_id: indexId, query, top_k: topK },
+								);
+								for (const node of result.results ?? []) {
+									if (node?.content) contextTexts.push(node.content);
+								}
+							}
+						} catch (e) {
+							throw new NodeApiError(
+								this.getNode(),
+								{ message: `Could not retrieve context: ${errorMessage(e)}}` },
+								{ itemIndex: i },
+							);
+						}
+
+						returnData.push({
+							json: { context: contextTexts },
+							pairedItem: { item: i },
+						});
+					} else {
+						throw new NodeOperationError(
+							this.getNode(),
+							`Operation ${operation} not supported for resource ${resource}`,
+							{ itemIndex: i },
+						);
+					}
 				} else if (resource === 'splitting') {
 					if (operation === 'split') {
 						// Get binary data input
@@ -362,7 +439,7 @@ export class LlamaParsePlatform implements INodeType {
 						const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 						// Get credentials
-						const credentials = await this.getCredentials('llamaCloudApi');
+						const credentials = await this.getCredentials('llamaParseApi');
 						const apiKey = credentials.apiKey as string;
 						const baseUrl =
 							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
@@ -383,11 +460,10 @@ export class LlamaParsePlatform implements INodeType {
 							);
 						}
 
-						const allowUncategorized = this.getNodeParameter(
-							'allowUncategorized',
-							i,
-							'include',
-						) as 'include' | 'forbid' | 'omit';
+						const allowUncategorized = this.getNodeParameter('allowUncategorized', i, 'include') as
+							| 'include'
+							| 'forbid'
+							| 'omit';
 
 						let fileId: string;
 						try {
@@ -430,8 +506,7 @@ export class LlamaParsePlatform implements INodeType {
 							() => getJSON<SplitStatus>(http, `/api/v1/beta/split/jobs/${jobId}`),
 							(r) => r?.status === 'completed',
 							(r) => r?.status === 'failed' || r?.status === 'cancelled',
-							(r) =>
-								`Split job ${jobId} ${r?.status}: ${r?.error_message ?? 'unknown error'}`,
+							(r) => `Split job ${jobId} ${r?.status}: ${r?.error_message ?? 'unknown error'}`,
 							{ label: `Split job ${jobId}` },
 						);
 
