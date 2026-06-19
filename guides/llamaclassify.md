@@ -1,8 +1,8 @@
-# LlamaClassify Setup in n8n
+# Classify Setup in n8n
 
 ## Setup
 
-Select the 'LlamaClassify' node with the 'Classify a file' action.
+Select the 'Classify a document' action.
 
 ![LlamaClassify Pt1](./assets/llamaclassify_pt1.png)
 
@@ -15,17 +15,17 @@ When setting up the node, you should provide:
 
 ![LlamaClassify Pt2](./assets/llamaclassify_pt2.png)
 
-As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a webhook.
+As for Parse, you can also set the node to receive inputs from other nodes, such as a webhook.
 
 ---
 
 ### View Also:
 
-- [LlamaParse n8n setup](./llamaparse.md)
-- [LlamaCloud Index v1 n8n setup](./llamacloud_index.md)
-- [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
-- [LlamaExtract n8n setup](./llamaextract.md)
-- [LlamaSheets n8n setup](./llamasheets.md)
-- [Setting up LlamaCloud nodes](./index.md)
+- [Parse n8n setup](./llamaparse.md)
+- [Index v1 n8n setup](./llamacloud_index.md)
+- [Index v2 n8n setup](./llamacloud_indexv2.md)
+- [Extract n8n setup](./llamaextract.md)
+- [Split n8n setup](./llamasplit.md)
+- [Setting up LlamaParse Platform nodes](./index.md)
 - [Setup with Docker](./docker.md)
 - [Back to top](#llamaclassify-setup-in-n8n)

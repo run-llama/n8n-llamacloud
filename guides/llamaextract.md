@@ -1,8 +1,8 @@
-# LlamaExtract Setup in n8n
+# Extract Setup in n8n
 
 ## Prerequisites
 
-In order to make LlamaExtract work, you need to first create an Extraction Configuration on LlamaCloud Platform with your designed schema.
+In order to make Extract work, you need to first create an Extraction Configuration on the LlamaParse Platform with your designed schema.
 
 With python code (current SDK), that looks like:
 
@@ -33,29 +33,29 @@ config = client.configurations.create(
 print(config.id)
 ```
 
-You can also create your configuration from the [LlamaCloud Platform UI](https://developers.llamaindex.ai/llamaparse/extract/web_ui/).
+You can also create your configuration from the [LlamaParse Platform UI](https://developers.llamaindex.ai/llamaparse/extract/web_ui/).
 
 ## Setup
 
-Select the 'LlamaExtract' node with the 'Extract data from a file' action.
+Select the 'Extract structured data from a document' action from the LlamaParse Platform node:
 
 ![LlamaExtract Pt1](./assets/llamaextract_pt1.png)
 
-When setting up the node, pass your Configuration ID (copy it from the LlamaCloud Platform UI or from the outputs of the code snippets), and the binary data of file:
+When setting up the action, pass your Configuration ID (copy it from the LlamaParse Platform UI or from the outputs of the code snippets), and the binary data of file:
 
 ![LlamaExtract Pt2](./assets/llamaextract_pt2.png)
 
-As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a webhook.
+As for Parse, you can also set the node to receive inputs from other nodes, such as a webhook.
 
 ---
 
 ### View Also:
 
-- [LlamaParse n8n setup](./llamaparse.md)
-- [LlamaCloud Index v1 n8n setup](./llamacloud_index.md)
-- [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
-- [LlamaClassify n8n setup](./llamaclassify.md)
-- [LlamaSheets n8n setup](./llamasheets.md)
-- [Setting up LlamaCloud nodes](./index.md)
+- [Parse n8n setup](./llamaparse.md)
+- [Index v1 n8n setup](./llamacloud_index.md)
+- [Index v2 n8n setup](./llamacloud_indexv2.md)
+- [Classify n8n setup](./llamaclassify.md)
+- [Split n8n setup](./llamasplit.md)
+- [Setting up LlamaParse Platform nodes](./index.md)
 - [Setup with Docker](./docker.md)
 - [Back to top](#llamaextract-setup-in-n8n)

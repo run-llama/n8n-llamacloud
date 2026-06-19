@@ -1,34 +1,40 @@
-# LlamaCloud Index setup in n8n
+# Index v1 setup in n8n
 
 ## Prerequisites
 
-In order to use LlamaCloud Index in n8n, you need to create an Index on LlamaCloud.
+In order to use Index v1 (legacy) in n8n, you need to create an Index on the LlamaParse Platform.
 
-Learn how to set up an Index through the [Platform UI](https://developers.llamaindex.ai/python/cloud/llamacloud/getting_started/#set-up-an-index-via-ui) or from [code](https://developers.llamaindex.ai/python/cloud/llamacloud/guides/framework_integration/).
+Learn how to set up an Index from the [Platform UI](https://developers.llamaindex.ai/llamaparse/cloud-index/getting_started/#set-up-an-index-via-ui) or through [code](https://developers.llamaindex.ai/llamaparse/cloud-index/guides/api_sdk/).
 
 ## Setup
 
-The LlamaCloud index node is specifically designed for chat inputs, so you will first need to set up a Chat Trigger:
+The Index v1 action is specifically designed for chat inputs, so you will first need to set up a Chat Trigger:
 
 ![Chat Trigger](./assets/chat_trigger.png)
 
-And then you can select the 'LlamaCloud' node, pasting the ID of your LlamaCloud Index in the configuration field:
+You can select the 'Retrieve context from legacy pipelines' action from the LlamaParse Platform node:
 
 ![LlamaCloud Index Setup](./assets/index_pt1.png)
 
-Once that is set, you can use the chat messages as input for the LlamaCloud Index to retrieve information simply by connecting the two nodes, and the you can start chatting:
+And paste the ID of your LlamaCloud Index in the configuration field and, optionally, the top K chunks to retrieve:
 
-![LlamaCloud Index Chat](./assets/index_pt2.png)
+![LlamaCloud Index Setup](./assets/index_pt1b.png)
+
+Once that is set, you can use the chat messages as input for Index v1 to retrieve information simply by connecting the nodes, and the you can start chatting:
+
+![LlamaCloud Index Chat](./assets/index_chat.png)
+
+_Image using [Index v2](./llamacloud_indexv2.md)_
 
 ---
 
 ### View Also:
 
-- [LlamaParse n8n setup](./llamaparse.md)
-- [LlamaExtract Setup](./llamaextract.md)
-- [LlamaClassify n8n setup](./llamaclassify.md)
-- [LlamaSheets n8n setup](./llamasheets.md)
-- [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
-- [Setting up LlamaCloud nodes](./index.md)
+- [Parse n8n setup](./llamaparse.md)
+- [Extract Setup](./llamaextract.md)
+- [Classify n8n setup](./llamaclassify.md)
+- [Split n8n setup](./llamasplit.md)
+- [Index v2 n8n setup](./llamacloud_indexv2.md)
+- [Setting up LlamaParse Platform nodes](./index.md)
 - [Setup with Docker](./docker.md)
 - [Back to top](#llamacloud-index-setup-in-n8n)

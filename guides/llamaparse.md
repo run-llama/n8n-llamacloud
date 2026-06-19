@@ -1,6 +1,6 @@
-# LlamaParse n8n setup
+# Parse n8n setup
 
-You can setup LlamaParse by choosing the `LlamaParse` node and the `Parse PDF File` action:
+You can setup Parse by choosing the 'Parse a document' action from the LlamaParse Platform node:
 
 ![LlamaParse Pt1](./assets/llamaparse_pt1.png)
 
@@ -21,7 +21,7 @@ curl -X POST \
   http://localhost:5678/<YOUR_WEBHOOK_NAME>/<YOUR_WEBHOOK_PATH>
 ```
 
-And you can take the webhook output as input for LlamaParse:
+And you can take the webhook output as input for Parse:
 
 ![n8n form input](./assets/llamaparse_onwebhook.png)
 
@@ -29,11 +29,11 @@ And you can take the webhook output as input for LlamaParse:
 
 ### View Also:
 
-- [LlamaCloud Index v1 n8n setup](./llamacloud_index.md)
-- [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
-- [LlamaExtract Setup](./llamaextract.md)
-- [LlamaClassify n8n setup](./llamaclassify.md)
-- [LlamaSheets n8n setup](./llamasheets.md)
-- [Setting up LlamaCloud nodes](./index.md)
+- [Index v1 n8n setup](./llamacloud_index.md)
+- [Index v2 n8n setup](./llamacloud_indexv2.md)
+- [Extract Setup](./llamaextract.md)
+- [Classify n8n setup](./llamaclassify.md)
+- [Split n8n setup](./llamasplit.md)
+- [Setting up LlamaParse Platform nodes](./index.md)
 - [Setup with Docker](./docker.md)
 - [Back to top](#llamaparse-n8n-setup)

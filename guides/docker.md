@@ -1,4 +1,4 @@
-# Use LlamaCloud Nodes With n8n in Docker
+# Use LlamaParse Platform nodes With n8n in Docker
 
 > **IMPORTANT NOTE**: _this guide is mainly intended for local deployment and testing in dev environments. If you wish to deploy to production, you might need some optimizations and [extra configuration for n8n](https://docs.n8n.io/hosting/installation/docker/#starting-n8n)_
 
@@ -35,5 +35,5 @@ In both cases, you should be able to see the n8n instance up and running at http
 - [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
 - [LlamaExtract Setup](./llamaextract.md)
 - [LlamaClassify n8n setup](./llamaclassify.md)
-- [LlamaSheets n8n setup](./llamasheets.md)
+- [LlamaSplit n8n setup](./llamasplit.md)
 - [Back to top](#use-llamacloud-nodes-with-n8n-in-docker)

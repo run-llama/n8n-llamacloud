@@ -1,14 +1,14 @@
-# LlamaSheets Setup in n8n
+# Split Setup in n8n
 
 ## Setup
 
-Select the 'LlamaSheets' node with the 'Parse an xlsx file' action.
+Select the 'Split a file' action from the LlamaParse Platform node:
 
-![LlamaSheets Pt1](./assets/llamasheets_pt1.png)
+![LlamaSplit Pt1](./assets/llamasplit_pt1.png)
 
-When setting up the node, simply provide the binary data of a file:
+When setting up the node, provide the binary data of a file and the categories according to which the file should be split:
 
-![LlamaSheets Pt2](./assets/llamasheets_pt2.png)
+![LlamaSplit Pt2](./assets/llamasplit_pt2.png)
 
 As for LlamaParse, you can also set the node to receive inputs from other nodes, such as a webhook.
 
@@ -21,6 +21,6 @@ As for LlamaParse, you can also set the node to receive inputs from other nodes,
 - [LlamaCloud Index v2 n8n setup](./llamacloud_indexv2.md)
 - [LlamaExtract n8n setup](./llamaextract.md)
 - [LlamaClassify n8n setup](./llamaclassify.md)
-- [Setting up LlamaCloud nodes](./index.md)
+- [Setting up LlamaParse Platform nodes](./index.md)
 - [Setup with Docker](./docker.md)
 - [Back to top](#llamasheets-setup-in-n8n)
