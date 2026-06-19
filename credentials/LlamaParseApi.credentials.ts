@@ -6,9 +6,9 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class LlamaCloudApi implements ICredentialType {
-	name = 'llamaCloudApi';
-	displayName = 'LlamaCloud API';
+export class LlamaParseApi implements ICredentialType {
+	name = 'llamaParseApi';
+	displayName = 'LlamaParse API';
 	icon: Icon = { light: 'file:./llamaindex_white.svg', dark: 'file:./llamaindex_dark.svg' };
 	documentationUrl = 'https://developers.llamaindex.ai/llamaparse/general/api_key/';
 	properties: INodeProperties[] = [
