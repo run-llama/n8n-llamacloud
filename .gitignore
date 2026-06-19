@@ -11,3 +11,4 @@ guides/html/*.html
 guides/html/assets/
 codegen/sdk-checks/sdk-check
 sdk-old/
+legacy_nodes/
