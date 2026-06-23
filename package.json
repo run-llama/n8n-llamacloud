@@ -1,6 +1,6 @@
 {
 	"name": "@llamaindex/n8n-nodes-llamacloud",
-	"version": "6.4.0",
+	"version": "6.5.0",
 	"description": "LlamaParse Platform integration with n8n",
 	"license": "MIT",
 	"homepage": "https://run-llama.github.io/n8n-llamacloud/",
@@ -33,7 +33,7 @@
 		],
 		"n8nNodesApiVersion": 1,
 		"nodes": [
-			"dist/nodes/LlamaParse/LlamaParsePlatform.node.js"
+			"dist/nodes/LlamaParsePlatform/LlamaParsePlatform.node.js"
 		]
 	},
 	"devDependencies": {
