@@ -16,9 +16,13 @@ You can select the 'Retrieve from index' action from the LlamaParse Platform nod
 
 ![LlamaCloud Index Setup](./assets/indexv2_pt1.png)
 
-And parse the ID of your LlamaCloud Index in the configuration field, and, optionally, the top K chunks to retrieve:
+And provide the ID of your LlamaCloud Index in the configuration field, and, optionally, the top K chunks to retrieve:
 
 ![LlamaCloud Index Setup](./assets/indexv2_pt2.png)
+
+Or select the index from the list of available ones:
+
+![LlamaCloud Index Setup](./assets/indexv2_pt3.png)
 
 Once that is set, you can use the chat messages as input for the Index v2 to retrieve information simply by connecting the nodes, and the you can start chatting:
 
@@ -31,7 +35,6 @@ Once that is set, you can use the chat messages as input for the Index v2 to ret
 - [Parse n8n setup](./llamaparse.md)
 - [Extract Setup](./llamaextract.md)
 - [Classify n8n setup](./llamaclassify.md)
-- [Index v1 n8n setup](./llamacloud_index.md)
 - [LlamaSplit n8n setup](./llamasplit.md)
 - [Setting up LlamaParse Platform nodes](./index.md)
 - [Setup with Docker](./docker.md)

@@ -7,6 +7,7 @@ import {
 	NodeConnectionTypes,
 	IDataObject,
 	NodeApiError,
+	ILoadOptionsFunctions,
 } from 'n8n-workflow';
 
 import { getJSON, postJSON, pollUntil, uploadFile, errorMessage } from './resources/utils.js';
@@ -88,6 +89,39 @@ export class LlamaParsePlatform implements INodeType {
 		],
 		usableAsTool: true,
 	};
+
+	methods = {
+		listSearch: {
+			async searchIndexes(this: ILoadOptionsFunctions) {
+				const credentials = await this.getCredentials('llamaParseApi');
+				const apiKey = credentials.apiKey as string;
+				const baseUrl = (credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
+				const http = { apiKey, baseUrl };
+
+				const results: Array<{ name: string; value: string }> = [];
+				let cursor: string | undefined;
+
+				do {
+					const page = await getJSON<{
+						items: Array<{ id: string; name: string }>;
+						next_page_token?: string | null;
+					}>(http, '/api/v1/indexes', cursor ? { cursor } : undefined);
+
+					for (const idx of page.items ?? []) {
+						results.push({
+							name: idx.name || idx.id,
+							value: idx.id,
+						});
+					}
+
+					cursor = page.next_page_token ?? undefined;
+				} while (cursor);
+
+				return { results };
+			},
+		},
+	};
+
 	// The execute method will go here
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
@@ -103,7 +137,6 @@ export class LlamaParsePlatform implements INodeType {
 			| 'classify'
 			| 'extract'
 			| 'retrieveIndex'
-			| 'retrievePipeline'
 			| 'split';
 
 		// For each item, make an API call to create a contact
@@ -383,14 +416,14 @@ export class LlamaParsePlatform implements INodeType {
 						);
 					}
 				} else if (resource === 'retrieval') {
-					if (operation === 'retrieveIndex' || operation === 'retrievePipeline') {
+					if (operation === 'retrieveIndex') {
 						const credentials = await this.getCredentials('llamaParseApi');
 						const apiKey = credentials.apiKey as string;
 						const baseUrl =
 							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
 						const http = { apiKey, baseUrl };
 
-						const indexId = this.getNodeParameter('indexId', i) as string;
+						const indexId = this.getNodeParameter('indexId', i) as { value: string };
 						const queryRaw = this.getNodeParameter('query', i, '') as unknown;
 						const query = typeof queryRaw === 'string' ? queryRaw : String(queryRaw ?? '');
 						const topKRaw = this.getNodeParameter('topK', i, 5) as unknown;
@@ -413,25 +446,13 @@ export class LlamaParsePlatform implements INodeType {
 
 						const contextTexts: string[] = [];
 						try {
-							if (operation === 'retrievePipeline') {
-								const result = await postJSON<{
-									retrieval_nodes: Array<{ node: { text?: string | null } }>;
-								}>(http, `/api/v1/pipelines/${indexId}/retrieve`, {
-									dense_similarity_top_k: topK,
-									query,
-								});
-								for (const node of result.retrieval_nodes ?? []) {
-									if (node?.node?.text) contextTexts.push(node.node.text);
-								}
-							} else {
-								const result = await postJSON<{ results: Array<{ content: string }> }>(
-									http,
-									'/api/v1/retrieval/retrieve',
-									{ index_id: indexId, query, top_k: topK },
-								);
-								for (const node of result.results ?? []) {
-									if (node?.content) contextTexts.push(node.content);
-								}
+							const result = await postJSON<{ results: Array<{ content: string }> }>(
+								http,
+								'/api/v1/retrieval/retrieve',
+								{ index_id: indexId.value, query, top_k: topK },
+							);
+							for (const node of result.results ?? []) {
+								if (node?.content) contextTexts.push(node.content);
 							}
 						} catch (e) {
 							throw new NodeApiError(
