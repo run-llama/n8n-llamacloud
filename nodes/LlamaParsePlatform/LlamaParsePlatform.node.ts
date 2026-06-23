@@ -306,7 +306,17 @@ export class LlamaParsePlatform implements INodeType {
 						const baseUrl =
 							(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
 
-						const configId = this.getNodeParameter('configId', i) as string;
+						let ds = this.getNodeParameter('dataSchema', i) as unknown;
+						if (typeof ds === 'string') {
+							ds = JSON.parse(ds);
+						} else if (typeof ds !== 'object') {
+							// Not an HTTP-related exception, hence not a NodeApiError
+							throw new NodeOperationError(
+								this.getNode(),
+								`Invalid input type for data schema: ${typeof ds}`,
+								{ itemIndex: i },
+							);
+						}
 						const http = { apiKey, baseUrl };
 
 						let fileId: string;
@@ -329,8 +339,10 @@ export class LlamaParsePlatform implements INodeType {
 						let jobId: string;
 						try {
 							const job = await postJSON<{ id: string }>(http, '/api/v2/extract', {
-								configuration_id: configId,
 								file_input: fileId,
+								configuration: {
+									data_schema: ds,
+								},
 							});
 							jobId = job.id;
 						} catch (e) {
