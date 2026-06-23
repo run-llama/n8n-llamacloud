@@ -17,7 +17,6 @@ As for Parse, you can also set the node to receive inputs from other nodes, such
 ### View Also:
 
 - [Parse n8n setup](./llamaparse.md)
-- [Index v1 n8n setup](./llamacloud_index.md)
 - [Index v2 n8n setup](./llamacloud_indexv2.md)
 - [Classify n8n setup](./llamaclassify.md)
 - [Split n8n setup](./llamasplit.md)

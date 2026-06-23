@@ -29,7 +29,6 @@ And you can take the webhook output as input for Parse:
 
 ### View Also:
 
-- [Index v1 n8n setup](./llamacloud_index.md)
 - [Index v2 n8n setup](./llamacloud_indexv2.md)
 - [Extract Setup](./llamaextract.md)
 - [Classify n8n setup](./llamaclassify.md)

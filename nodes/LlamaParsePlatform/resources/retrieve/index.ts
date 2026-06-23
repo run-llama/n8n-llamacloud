@@ -18,13 +18,6 @@ export const retrieveProperties: INodeProperties[] = [
 					'Retrieve context from a LlamaCloud Index using the /api/v1/retrieval/retrieve endpoint',
 				action: 'Retrieve context from an index',
 			},
-			{
-				name: 'Retrieve From Pipeline (Legacy)',
-				value: 'retrievePipeline',
-				description:
-					'Retrieve context from a legacy LlamaCloud pipeline using the /api/v1/pipelines retrieve endpoint',
-				action: 'Retrieve context from a legacy pipeline',
-			},
 		],
 		default: 'retrieveIndex',
 		noDataExpression: true,
@@ -32,15 +25,32 @@ export const retrieveProperties: INodeProperties[] = [
 	{
 		displayName: 'Index ID',
 		name: 'indexId',
-		type: 'string',
+		type: 'resourceLocator',
+		default: { mode: 'list', value: '' },
 		required: true,
-		default: '',
-		placeholder: 'e.g. 1234abcd-...',
-		description: 'The LlamaCloud Index (or legacy pipeline) ID to retrieve from',
+		modes: [
+			{
+				displayName: 'From List',
+				name: 'list',
+				type: 'list',
+				placeholder: 'Select an index...',
+				typeOptions: {
+					searchListMethod: 'searchIndexes',
+					searchable: true,
+				},
+			},
+			{
+				displayName: 'By ID',
+				name: 'id',
+				type: 'string',
+				placeholder: 'e.g. 1234abcd-...',
+			},
+		],
+		description: 'The LlamaCloud Index to retrieve from',
 		displayOptions: {
 			show: {
 				resource: ['retrieval'],
-				operation: ['retrieveIndex', 'retrievePipeline'],
+				operation: ['retrieveIndex'],
 			},
 		},
 	},
@@ -55,7 +65,7 @@ export const retrieveProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['retrieval'],
-				operation: ['retrieveIndex', 'retrievePipeline'],
+				operation: ['retrieveIndex'],
 			},
 		},
 	},
@@ -71,7 +81,7 @@ export const retrieveProperties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['retrieval'],
-				operation: ['retrieveIndex', 'retrievePipeline'],
+				operation: ['retrieveIndex'],
 			},
 		},
 	},
