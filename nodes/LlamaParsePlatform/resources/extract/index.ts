@@ -14,7 +14,8 @@ export const extractProperties: INodeProperties[] = [
 			{
 				name: 'Extract',
 				value: 'extract',
-				description: 'Extract structured data from a document using a saved extraction configuration',
+				description:
+					'Extract structured data from a document using a saved extraction configuration',
 				action: 'Extract structured data from a document',
 			},
 		],
@@ -22,9 +23,9 @@ export const extractProperties: INodeProperties[] = [
 		noDataExpression: true,
 	},
 	{
-		displayName: 'Configuration ID',
-		name: 'configId',
-		type: 'string',
+		displayName: 'Data Schema',
+		name: 'dataSchema',
+		type: 'json',
 		required: true,
 		displayOptions: {
 			show: {
@@ -33,9 +34,8 @@ export const extractProperties: INodeProperties[] = [
 			},
 		},
 		default: '',
-		placeholder: 'e.g. 1234abcd-...',
-		description:
-			'ID of the LlamaExtract configuration that defines the schema and prompts. Create one in the LlamaCloud dashboard under Extract.',
+		placeholder: '',
+		description: 'JSON schema representing the structure the extracted data should follow',
 	},
 	{
 		displayName: 'Binary Property',
@@ -50,6 +50,6 @@ export const extractProperties: INodeProperties[] = [
 		},
 		default: 'data',
 		placeholder: 'data',
-		description: 'Name of the input item\'s binary property that holds the file to extract from',
+		description: "Name of the input item's binary property that holds the file to extract from",
 	},
 ];
