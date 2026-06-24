@@ -23,6 +23,31 @@ export const extractProperties: INodeProperties[] = [
 		noDataExpression: true,
 	},
 	{
+		displayName: 'Configuration Mode',
+		name: 'configMode',
+		type: 'options',
+		options: [
+			{
+				name: 'Schema',
+				value: 'schema',
+				description: 'Provide an inline JSON schema defining the extraction structure',
+			},
+			{
+				name: 'Configuration ID',
+				value: 'configId',
+				description: 'Use a saved LlamaExtract configuration from the LlamaCloud dashboard',
+			},
+		],
+		default: 'schema',
+		noDataExpression: true,
+		displayOptions: {
+			show: {
+				operation: ['extract'],
+				resource: ['extracting'],
+			},
+		},
+	},
+	{
 		displayName: 'Data Schema',
 		name: 'dataSchema',
 		type: 'json',
@@ -31,11 +56,29 @@ export const extractProperties: INodeProperties[] = [
 			show: {
 				operation: ['extract'],
 				resource: ['extracting'],
+				configMode: ['schema'],
 			},
 		},
 		default: '',
 		placeholder: '',
 		description: 'JSON schema representing the structure the extracted data should follow',
+	},
+	{
+		displayName: 'Configuration ID',
+		name: 'configId',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['extract'],
+				resource: ['extracting'],
+				configMode: ['configId'],
+			},
+		},
+		default: '',
+		placeholder: 'e.g. 1234abcd-...',
+		description:
+			'ID of the LlamaExtract configuration that defines the schema and prompts. Create one in the LlamaCloud dashboard under Extract.',
 	},
 	{
 		displayName: 'Binary Property',
