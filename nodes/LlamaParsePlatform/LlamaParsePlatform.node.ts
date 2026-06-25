@@ -464,7 +464,7 @@ export class LlamaParsePlatform implements INodeType {
 						} catch (e) {
 							throw new NodeApiError(
 								this.getNode(),
-								{ message: `Could not retrieve context: ${errorMessage(e)}}` },
+								{ message: `Could not retrieve context: ${errorMessage(e)}` },
 								{ itemIndex: i },
 							);
 						}
