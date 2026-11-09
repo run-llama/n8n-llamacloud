@@ -301,6 +301,17 @@ export class LlamaParsePlatform implements INodeType {
 						(credentials.baseURL as string | null) ?? 'https://api.cloud.llamaindex.ai';
 
 					const configMode = this.getNodeParameter('configMode', i) as 'schema' | 'configId';
+					const extractOptions = this.getNodeParameter('extractOptions', i, {}) as {
+						citeSources?: boolean;
+						confidenceScores?: boolean;
+						includeExtractionMetadata?: boolean;
+					};
+					const citeSources = extractOptions.citeSources === true;
+					const confidenceScores = extractOptions.confidenceScores === true;
+					const includeExtractionMetadata =
+						extractOptions.includeExtractionMetadata === true ||
+						citeSources ||
+						confidenceScores;
 					const http = { apiKey, baseUrl };
 
 					let extractJobBody: Record<string, unknown>;
@@ -316,7 +327,10 @@ export class LlamaParsePlatform implements INodeType {
 								{ itemIndex: i },
 							);
 						}
-						extractJobBody = { configuration: { data_schema: ds } };
+						const configuration: Record<string, unknown> = { data_schema: ds };
+						if (citeSources) configuration.cite_sources = true;
+						if (confidenceScores) configuration.confidence_scores = true;
+						extractJobBody = { configuration };
 					} else {
 						const configId = this.getNodeParameter('configId', i) as string;
 						extractJobBody = { configuration_id: configId };
@@ -363,9 +377,12 @@ export class LlamaParsePlatform implements INodeType {
 						);
 					}
 
-					// 2) Poll until complete.
+					// 2) Poll until complete. Request extract_metadata only when needed.
+					const statusQuery = includeExtractionMetadata
+						? { expand: ['extract_metadata'] }
+						: undefined;
 					const result = await pollUntil<ExtractStatus>(
-						() => getJSON<ExtractStatus>(http, `/api/v2/extract/${jobId}`),
+						() => getJSON<ExtractStatus>(http, `/api/v2/extract/${jobId}`, statusQuery),
 						(r) => {
 							return r?.status === 'COMPLETED';
 						},
@@ -377,6 +394,13 @@ export class LlamaParsePlatform implements INodeType {
 					if (result.extract_result) {
 						const stringified = JSON.stringify(result.extract_result, null, 2);
 						const obj: IDataObject = { result: stringified };
+						if (includeExtractionMetadata) {
+							Object.assign(obj, {
+								extract_result: result.extract_result,
+								extract_metadata: result.extract_metadata ?? null,
+								job_id: jobId,
+							});
+						}
 						returnData.push({ json: obj, pairedItem: { item: i } });
 					} else {
 						// this is a non-HTTP related failure, hence the NodeOperationError

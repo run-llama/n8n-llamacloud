@@ -27,10 +27,11 @@ Split a multi-section document into segments using semantic categories you defin
 - Output: one item per segment, with `{ category, confidence, pages }`
 
 ### ⚗️ [Extract](./guides/llamaextract.md)
-Run a pre-configured LlamaExtract agent against a file to get back structured JSON matching your schema.
+Extract structured JSON from a file using an inline JSON schema or a saved LlamaExtract configuration ID.
 
-- Input: binary file + Extraction Configuration ID
-- Output: `{ result: <stringified JSON> }`
+- Input: binary file or File ID + schema or Configuration ID
+- Output (default): `{ result: <stringified JSON> }`
+- Optional: cite sources, confidence scores (Schema mode), and `extract_metadata` / `job_id` in the output when metadata is requested
 
 ### 🔎 Retrieve ([Index v1](./guides/llamacloud_index.md) · [Index v2](./guides/llamacloud_indexv2.md))
 Query a LlamaCloud index/pipeline and return the top-k retrieved chunks. Works against both the v1 Pipelines API and the newer v2 Index Retrieval API — ideal for RAG flows with the n8n AI Agent / Chat Trigger nodes.
